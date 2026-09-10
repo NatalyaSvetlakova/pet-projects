@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Азбука Роз — каталог сортов роз</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="nav__logo"><span>🌹</span> Азбука Роз</a>
+      <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')">☰</button>
+      <ul class="nav__links">
+        <li><a href="index.html" class="active">Главная</a></li>
+        <li><a href="catalog.html">Каталог</a></li>
+        <li><a href="favorites.html">Избранное</a></li>
+        <li><a href="about.html">О проекте</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrapper">
+
+    <!-- ===== СЛАЙДЕР ===== -->
+    <section class="hero-wrapper">
+      <div id="hero-slider" class="hero-slider-container"></div>
+    </section>
+
+    <!-- Отступ между слайдером и текстом -->
+    <div style="height: 48px;"></div>
+
+    <!-- ===== ОПИСАНИЕ ===== -->
+    <section class="section">
+      <h2 class="section__title">Азбука Роз</h2>
+      <p class="section__subtitle">Каталог сортов роз с фото, характеристиками и описаниями</p>
+      <p class="section__text">
+        Этот проект собрал пятьдесят проверенных сортов роз — от классических
+        чайно-гибридных до неприхотливых миниатюрных. Каждый сорт с подробными
+        характеристиками: высота куста, размер цветка, аромат, морозостойкость
+        и период цветения.
+      </p>
+    </section>
+
+    <!-- ===== ПОПУЛЯРНЫЕ СОРТА ===== -->
+    <section class="section" style="padding-top: 0;">
+      <h2 class="section__title">Популярные сорта</h2>
+      <p class="section__subtitle">Самые высоко оценённые розы в коллекции</p>
+      <div class="cards-grid" id="featuredCards"></div>
+      <a href="catalog.html" class="btn btn--center">Смотреть все сорта</a>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>Азбука Роз — <span>пет-проект</span> для портфолио веб-разработчика</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/favorites.js"></script>
+  <script src="js/slider.js"></script>
+  <script src="js/home.js"></script>
+  <script>
+    // === СЛАЙДЕР НА ГЛАВНОЙ ===
+    (function() {
+      const container = document.querySelector('#hero-slider');
+      if (!container) return;
+
+      const topRoses = [...roses]
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 20)
+        .map((rose) => ({
+          image: rose.images && rose.images[0] ? rose.images[0] : null,
+          title: rose.name,
+          subtitle: rose.color,
+          link: `rose.html?id=${rose.id}`
+        }));
+
+      new RoseSlider({
+        container: "#hero-slider",
+        slides: topRoses,
+        autoplay: true,
+        interval: 5000,
+        showDots: true,
+        showArrows: true,
+        keyboard: true,
+        pauseOnHover: true,
+        loop: true
+      });
+    })();
+  </script>
+</body>
+</html>

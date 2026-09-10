@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!-- Объявляем тип документа - HTML5 (пятая версия языка разметки гипертекста), чтобы браузер правильно интерпретировал код и применял актуальные стандарты. -->
+<html lang="ru">
+<!-- Открывающий тег HTML с указанием языка страницы (русский). Помогает поисковикам и скринридерам корректно определять язык контента. -->
+    <head>
+    <!-- Секция head содержит метаданные («данные о данных») и подключаемые ресурсы, которые не отображаются напрямую на странице, но важны для ее работы и отображения. -->
+        <meta charset="UTF-8" />
+        <!-- Указывает кодировку документа (UTF‑8). Гарантирует корректное отображение кириллицы, спецсимволов и эмодзи. -->
+        <title>Слайд-шоу</title>
+        <!-- Заголовок вкладки браузера. Отображается в верхней части окна и в результатах поиска. -->
+        <link rel="stylesheet" href="/Slideshow_SimpleHTML/styles/style.css" />
+        <!-- Подключает внешний CSS‑файл со стилями. Путь styles/style.css означает, что файл style.css лежит в папке styles внутри текущей директории. -->
+    </head>
+    <body>
+    <!-- Основной контейнер видимого содержимого страницы. Все, что пользователь видит и с чем взаимодействует, размещается внутри body. -->
+        <!-- Контейнер для солнечных лучей -->
+        <div class="sun-rays"></div>
+        <!-- Контейнер для бликов в листве (несколько элементов для глубины) -->
+        <div class="leaf-glints">
+        <div class="glint glint-1"></div>
+        <div class="glint glint-2"></div>
+        <div class="glint glint-3"></div>
+        <div class="glint glint-4"></div>
+        <div class="glint glint-5"></div>
+        </div>    
+        <div class="bg-flash"></div>
+        <!-- Пустой блок для эффекта вспышки на фоне всей страницы (вне телефона). Класс bg-flash нужен, чтобы через CSS задать ему размер, положение и анимацию. -->
+        <h1 id="rosa-collection-toggle" class="page-title">𝄞♫ Rose Collection</h1>
+        <!-- Главный заголовок страницы. Добавлен id="rosa-collection-toggle" для удобного доступа из JS, привязываем автопрокрутку слайдов с интервалом 3000мс и фоновую музыку именно к этому элементу. -->
+        <div class="flash-overlay"></div>
+        <!-- Дополнительный слой для эффекта вспышки. Класс flash-overlay позволяет управлять этим эффектом отдельно от фона. -->            
+        <div class="phone-frame">
+        <!-- Контейнер, имитирующий корпус телефона. Все внутренние элементы (экран, кнопки, камера) будут позиционироваться относительно этого блока. -->             
+            <div class="speaker"></div>
+            <!-- Элемент динамика телефона (декоративный). Стилизуется через CSS, чтобы выглядеть как полоска сверху корпуса. -->
+            <div class="camera"></div>
+            <!-- Элемент камеры телефона (декоративный). Нужен для реалистичности макета; стилизуют как маленький круг. -->
+            <div class="home-button"></div>
+            <!-- Декоративная кнопка «Домой» на корпусе телефона. -->                        
+            <div class="screen"> 
+            <!-- Область экрана телефона. Внутри нее размещается галерея, заголовок слайда и кнопки навигации. Позиционирование и размеры экрана задают вид «картинки в картинке». -->
+                <div class="gallery">
+                <!-- Контейнер галереи. Внутри него находятся все изображения. Используется для управления слайдером через JS (переключение классов, сдвиг transform и т.п.). --> 
+                    <div class="photo">
+                    <!-- Блок-обертка для набора фото. Позволяет удобно применять стили к группе изображений (например, скрывать все, кроме активного). -->
+                        <img src="slides/photo_1.jpg" class="shown" />
+                        <!-- Первое изображение, которое по умолчанию видно (класс shown используется в JS/CSS, чтобы отображать именно его). -->
+                        <img src="slides/photo_2.jpg" />
+                        <img src="slides/photo_3.jpg" />
+                        <img src="slides/photo_4.jpg" />
+                        <img src="slides/photo_5.jpg" />
+                        <img src="slides/photo_6.jpg" />
+                        <img src="slides/photo_7.jpg" />
+                        <img src="slides/photo_8.jpg" />
+                        <img src="slides/photo_9.jpg" />
+                        <img src="slides/photo_10.jpg" />
+                        <img src="slides/photo_11.jpg" />
+                        <img src="slides/photo_12.jpg" />
+                        <img src="slides/photo_13.jpg" />
+                        <img src="slides/photo_14.jpg" />
+                        <img src="slides/photo_15.jpg" />
+                        <img src="slides/photo_16.jpg" />
+                        <img src="slides/photo_17.jpg" />
+                        <img src="slides/photo_18.jpg" />
+                        <img src="slides/photo_19.jpg" />
+                        <img src="slides/photo_20.jpg" />
+                        <img src="slides/photo_21.jpg" />
+                        <img src="slides/photo_22.jpg" />
+                        <img src="slides/photo_23.jpg" />
+                        <img src="slides/photo_24.jpg" />
+                        <img src="slides/photo_25.jpg" />
+                        <img src="slides/photo_26.jpg" />
+                        <img src="slides/photo_27.jpg" />
+                        <img src="slides/photo_28.jpg" />
+                        <img src="slides/photo_29.jpg" />
+                        <img src="slides/photo_30.jpg" />
+                        <img src="slides/photo_31.jpg" />
+                        <img src="slides/photo_32.jpg" />
+                        <img src="slides/photo_33.jpg" />
+                        <img src="slides/photo_34.jpg" />
+                        <img src="slides/photo_35.jpg" />
+                        <img src="slides/photo_36.jpg" />
+                        <img src="slides/photo_37.jpg" />
+                        <img src="slides/photo_38.jpg" />
+                        <img src="slides/photo_39.jpg" />
+                        <img src="slides/photo_40.jpg" />
+                        <img src="slides/photo_41.jpg" />
+                        <img src="slides/photo_42.jpg" />
+                        <img src="slides/photo_43.jpg" />
+                        <img src="slides/photo_44.jpg" />
+                        <img src="slides/photo_45.jpg" />
+                        <img src="slides/photo_46.jpg" />
+                        <img src="slides/photo_47.jpg" />
+                        <img src="slides/photo_48.jpg" />
+                        <img src="slides/photo_49.jpg" />
+                        <img src="slides/photo_50.jpg" />                        
+                        <!-- Остальные изображения слайд‑шоу. По умолчанию они скрыты (через CSS display: none или opacity: 0), а JS переключает видимость. -->
+                    </div> 
+                    <div class="slide-title" id="slideTitle">Заголовок слайда</div>
+                    <!-- Заголовок текущего слайда. id="slideTitle" нужен для доступа к элементу из JS, чтобы динамически менять текст при переключении фото. Класс slide-title - для стилизации (шрифт, цвет, тень, наклон и т.д.). -->                    
+                    <div id="slide-number" class="slide-number">Слайд 1</div>
+                    <!-- Сюда будет выводиться номер слайда -->                      
+                    <div class="tabs">
+                    <!-- Контейнер для кнопок навигации. Название tabs условно - это просто блок-обертка, чтобы удобно центрировать кнопки и задавать им отступы. -->
+                        <input type="button" class="prev" value="◀">
+                        <!-- Кнопка «Назад». Класс prev нужен для JS, чтобы повесить обработчик клика и переключать слайд. Символ ◀ - визуальный индикатор направления. -->
+                        <input type="button" class="next" value="▶">
+                        <!-- Кнопка «Вперед». Класс next нужен для JS аналогично prev. Символ ▶ - визуальный индикатор. -->                        
+                    </div>                
+                </div>
+            </div>
+            <!-- </div> - это закрывающий тег HTML-элемента <div>. В HTML почти все элементы парные. (<div>) открывает контейнер, кладет туда содержимое (текст, картинки, другие контейнеры), а затем закрывает его (</div>). -->     
+            <div class="phone-home"></div>
+            <!-- Декоративный элемент корпуса телефона (имитация кнопки). Класс phone-home позволяет стилизовать его отдельно. -->              
+        <audio id="soundCamera" src="/Slideshow_SimpleHTML/sounds/quick_camera_click.wav" preload="auto"></audio>
+        <!-- Аудиофайл щелчка камеры. id="soundCamera" нужен, чтобы из JS вызывать .play() при определенных действиях (например, при клике и смене слайда). preload="auto" говорит браузеру заранее загрузить файл, чтобы воспроизведение было мгновенным. -->        
+        <audio id="soundButton" src="/Slideshow_SimpleHTML/sounds/pressing_a_button.wav" preload="auto"></audio>
+        <!-- Аудиофайл щелчка нажатия кнопки. id="soundButton" - для управления из JS. preload="auto" аналогично ускоряет готовность звука к воспроизведению. -->
+        <audio id="bgMusic" src="/Slideshow_SimpleHTML/sounds/Sommnia_Peter_Gregson.wav" loop preload></audio>
+        <!-- Аудиофайл фоновой музыки с id="bgMusic". loop - зацикливание трека. Плеер не виден на странице - аудиофайл фоновой музыки управляется только через JS. -->
+        <script src="/Slideshow_SimpleHTML/dist/main.js"></script>
+        <!-- Подключение основного JS‑файла, который управляет слайд‑шоу (переключение фото, обновление заголовка, проигрывание звуков, эффекты вспышки и т.д.). Путь dist/main.js означает, что скрипт лежит в папке dist. -->
+    </body>
+    <!--Закрывающий тег - означает: «здесь заканчивается видимая часть». -->
+</html>
+<!--</html> - закрывающий тег, который обозначает конец HTML-документа. -->

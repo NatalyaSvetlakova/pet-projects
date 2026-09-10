@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог — Азбука Роз</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="nav__logo"><span>🌹</span> Азбука Роз</a>
+      <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')">☰</button>
+      <ul class="nav__links">
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="catalog.html" class="active">Каталог</a></li>
+        <li><a href="favorites.html">Избранное</a></li>
+        <li><a href="about.html">О проекте</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrapper">
+
+    <!-- ===== ЗАГОЛОВОК ===== -->
+    <section class="section">
+      <h2 class="section__title">Каталог сортов</h2>
+      <p class="section__subtitle">Все сорта роз с фильтрацией и поиском</p>
+    </section>
+
+    <!-- ===== ФИЛЬТРЫ ===== -->
+    <section class="section" style="padding-top: 0;">
+      <div class="catalog__controls">
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">Все</button>
+          <button class="filter-btn" data-filter="floribunda">Флорибунда</button>
+          <button class="filter-btn" data-filter="hybrid-tea">Чайно-гибридные</button>
+          <button class="filter-btn" data-filter="climbing">Плетистые</button>
+          <button class="filter-btn" data-filter="miniature">Миниатюрные</button>
+        </div>
+        <input type="text" class="search-box" id="searchInput" placeholder="🔍 Поиск по названию или латинскому названию...">
+        <select class="sort-select" id="sortSelect">
+          <option value="default">По умолчанию</option>
+          <option value="rating">По рейтингу</option>
+          <option value="name">По названию</option>
+        </select>
+      </div>
+
+      <!-- Счетчик -->
+      <p class="catalog__count" id="catalogCount">Загрузка...</p>
+
+      <!-- Сетка карточек -->
+      <div class="cards-grid" id="catalogCards"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>Азбука Роз — <span>пет-проект</span> для портфолио веб-разработчика</p>
+  </footer>
+
+  <!-- ===== СКРИПТЫ ===== -->
+  <script src="js/data.js"></script>
+  <script src="js/favorites.js"></script>
+  <script src="js/catalog.js"></script>
+</body>
+</html>
