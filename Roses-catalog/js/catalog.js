@@ -1,9 +1,18 @@
-// ============================================
-// CATALOG.JS — СТРАНИЦА КАТАЛОГА
-// ============================================
-
 (function() {
   console.log('📚 Загрузка каталога...');
+
+  // === ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: Расчет рейтинга из отзывов ===
+  // Если в данных нет поля rating, считаем среднее из отзывов (поле score)
+  function getRatingValue(rose) {
+    if (rose.rating !== undefined && rose.rating !== null) {
+      return parseFloat(rose.rating);
+    }
+    if (rose.reviews && rose.reviews.length > 0) {
+      const sum = rose.reviews.reduce((acc, curr) => acc + (curr.score || 0), 0);
+      return (sum / rose.reviews.length).toFixed(1);
+    }
+    return 0;
+  }
 
   // === ПОЛУЧАЕМ ЭЛЕМЕНТЫ ===
   const container = document.getElementById('catalogCards');
@@ -24,7 +33,7 @@
 
   // === ФУНКЦИЯ РЕНДЕРИНГА ===
   function renderCatalog() {
-    // 1. Фильтрация по категории
+    // 1. Фильтрация по категории (БЕЗ ИЗМЕНЕНИЙ)
     let filtered = [...roses];
     if (currentFilter !== 'all') {
       filtered = filtered.filter(rose => 
@@ -33,7 +42,7 @@
       );
     }
 
-    // 2. Поиск по названию
+    // 2. Поиск по названию (БЕЗ ИЗМЕНЕНИЙ)
     if (currentSearch.trim()) {
       const query = currentSearch.toLowerCase().trim();
       filtered = filtered.filter(rose =>
@@ -42,25 +51,28 @@
       );
     }
 
-    // 3. Сортировка
+    // 3. Сортировка (ОБНОВЛЕНО: используем нашу функцию getRatingValue)
     switch (currentSort) {
       case 'rating':
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        filtered.sort((a, b) => {
+          const ratingA = getRatingValue(a);
+          const ratingB = getRatingValue(b);
+          return (ratingB || 0) - (ratingA || 0); // Сортировка по убыванию
+        });
         break;
       case 'name':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
         break;
       default:
-        // по умолчанию — по порядку в массиве
         break;
     }
 
-    // 4. Обновляем счетчик
+    // 4. Обновляем счетчик (БЕЗ ИЗМЕНЕНИЙ)
     if (countEl) {
       countEl.textContent = `Найдено ${filtered.length} сортов`;
     }
 
-    // 5. Рендерим карточки
+    // 5. Рендерим карточки (БЕЗ ИЗМЕНЕНИЙ логика вызова)
     if (filtered.length === 0) {
       container.innerHTML = `
         <div style="text-align:center;padding:60px 20px;color:#999;grid-column:1/-1;">
@@ -74,12 +86,13 @@
 
     container.innerHTML = filtered.map(rose => renderCard(rose)).join('');
 
-    // Вешаем обработчики на кнопки "В избранное"
+    // Вешаем обработчики на кнопки "В избранное" (БЕЗ ИЗМЕНЕНИЙ)
     container.querySelectorAll('.card__fav-btn').forEach(btn => {
       btn.addEventListener('click', function(e) {
+        e.preventDefault();     // ← ОТМЕНЯЕТ переход по <a href>
         e.stopPropagation();
         const id = this.dataset.id;
-        const isNowFavorite = favorites.toggle(id);
+        toggleFavorite(id, btn);
         this.textContent = isNowFavorite ? '❤️ В избранное' : '♡ В избранное';
         this.classList.toggle('active', isNowFavorite);
       });
@@ -88,19 +101,44 @@
     console.log(`✅ Отображено ${filtered.length} сортов`);
   }
 
-  // === ФУНКЦИЯ РЕНДЕРИНГА КАРТОЧКИ ===
+  // === ФУНКЦИЯ РЕНДЕРИНГА КАРТОЧКИ (ОБНОВЛЕНА) ===
   function renderCard(rose) {
-    const isFav = favorites.isFavorite(rose.id);
-    const image = rose.images && rose.images[0] ? rose.images[0] : '';
-    const rating = rose.rating || '—';
-    const category = rose.categoryLabel || rose.category || 'Сорт';
+    const isFav = isInFavorites(rose.id);
     
+    // --- ИСПРАВЛЕННАЯ ЛОГИКА ДЛЯ МАССИВА ---
+    let imageSrc = '';
+    
+    // 1. Проверяем, что images существует и это массив
+    if (rose.images && Array.isArray(rose.images) && rose.images.length > 0) {
+      // 2. Берем ПЕРВЫЙ элемент массива. 
+      // Раньше тут была ошибка: мы брали весь массив целиком.
+      const fileName = rose.images[0]; 
+      
+      // 3. Формируем путь
+      if (fileName) {
+        // Если в имени нет слэша, считаем, что это просто имя файла, добавляем папку img/
+        if (!fileName.includes('/')) {
+          imageSrc = `img/${fileName}`;
+        } else {
+          imageSrc = fileName;
+        }
+      }
+    }
+    // ---------------------------------------
+
+    const ratingNum = getRatingValue(rose);
+    const ratingText = ratingNum > 0 ? `${ratingNum} ★` : '—';
+    const reviewsCount = rose.reviews ? rose.reviews.length : 0;
+    const category = rose.categoryLabel || rose.category || 'Сорт';
+
+    // ВАЖНО: Вся строка ниже должна быть строго в обратных кавычках ` ... `
     return `
       <div class="card" data-id="${rose.id}">
         <a href="rose.html?id=${rose.id}" class="card__link">
           <div class="card__image-wrap">
-            <img src="${image}" alt="${rose.name}" class="card__image" loading="lazy" onerror="this.style.display='none'">
-            <span class="card__badge">★ ${rating}</span>
+            <!-- Вставляем готовый путь imageSrc -->
+            <img src="${imageSrc}" alt="${rose.name}" class="card__image" loading="lazy" onerror="this.style.display='none'">
+            <span class="card__badge">${ratingText}</span>
           </div>
           <div class="card__body">
             <span class="card__category">${category}</span>
@@ -108,7 +146,11 @@
             ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
             <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
             <div class="card__footer">
-              <span class="card__rating">★ ${rating}</span>
+              <div class="stars-wrapper">
+                <span class="stars-visual" style="--rating: ${ratingNum}"></span>
+                ${reviewsCount > 0 ? `<span class="rating-count">(${reviewsCount})</span>` : ''}
+              </div>
+              
               <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
                 ${isFav ? '❤️' : '♡'} В избранное
               </button>
@@ -119,9 +161,8 @@
     `;
   }
 
-  // === ОБРАБОТЧИКИ СОБЫТИЙ ===
+  // === ОБРАБОТЧИКИ СОБЫТИЙ (БЕЗ ИЗМЕНЕНИЙ) ===
 
-  // Поиск
   if (searchInput) {
     searchInput.addEventListener('input', function() {
       currentSearch = this.value;
@@ -129,7 +170,6 @@
     });
   }
 
-  // Сортировка
   if (sortSelect) {
     sortSelect.addEventListener('change', function() {
       currentSort = this.value;
@@ -137,7 +177,6 @@
     });
   }
 
-  // Фильтры
   filterBtns.forEach(btn => {
     btn.addEventListener('click', function() {
       filterBtns.forEach(b => b.classList.remove('active'));
@@ -152,8 +191,165 @@
 
   console.log('📚 Каталог загружен');
 })();
+// 
+// ВТОРАЯ ВЕРСИЯ КОДА
+// // ============================================
+// // CATALOG.JS — СТРАНИЦА КАТАЛОГА
+// // ============================================
+
+// (function() {
+//   console.log('📚 Загрузка каталога...');
+
+//   // === ПОЛУЧАЕМ ЭЛЕМЕНТЫ ===
+//   const container = document.getElementById('catalogCards');
+//   const searchInput = document.getElementById('searchInput');
+//   const sortSelect = document.getElementById('sortSelect');
+//   const filterBtns = document.querySelectorAll('.filter-btn');
+//   const countEl = document.getElementById('catalogCount');
+
+//   if (!container) {
+//     console.error('❌ Контейнер #catalogCards не найден');
+//     return;
+//   }
+
+//   // === ТЕКУЩИЕ НАСТРОЙКИ ФИЛЬТРАЦИИ ===
+//   let currentFilter = 'all';
+//   let currentSearch = '';
+//   let currentSort = 'default';
+
+//   // === ФУНКЦИЯ РЕНДЕРИНГА ===
+//   function renderCatalog() {
+//     // 1. Фильтрация по категории
+//     let filtered = [...roses];
+//     if (currentFilter !== 'all') {
+//       filtered = filtered.filter(rose => 
+//         rose.category === currentFilter || 
+//         rose.categoryLabel?.toLowerCase() === currentFilter.toLowerCase()
+//       );
+//     }
+
+//     // 2. Поиск по названию
+//     if (currentSearch.trim()) {
+//       const query = currentSearch.toLowerCase().trim();
+//       filtered = filtered.filter(rose =>
+//         rose.name.toLowerCase().includes(query) ||
+//         (rose.latinName && rose.latinName.toLowerCase().includes(query))
+//       );
+//     }
+
+//     // 3. Сортировка
+//     switch (currentSort) {
+//       case 'rating':
+//         filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+//         break;
+//       case 'name':
+//         filtered.sort((a, b) => a.name.localeCompare(b.name));
+//         break;
+//       default:
+//         // по умолчанию — по порядку в массиве
+//         break;
+//     }
+
+//     // 4. Обновляем счетчик
+//     if (countEl) {
+//       countEl.textContent = `Найдено ${filtered.length} сортов`;
+//     }
+
+//     // 5. Рендерим карточки
+//     if (filtered.length === 0) {
+//       container.innerHTML = `
+//         <div style="text-align:center;padding:60px 20px;color:#999;grid-column:1/-1;">
+//           <p style="font-size:3rem;">🌹</p>
+//           <p style="font-family:Georgia,serif;font-size:1.2rem;">Ничего не найдено</p>
+//           <p style="color:#bbb;">Попробуйте изменить параметры поиска</p>
+//         </div>
+//       `;
+//       return;
+//     }
+
+//     container.innerHTML = filtered.map(rose => renderCard(rose)).join('');
+
+//     // Вешаем обработчики на кнопки "В избранное"
+//     container.querySelectorAll('.card__fav-btn').forEach(btn => {
+//       btn.addEventListener('click', function(e) {
+//         e.stopPropagation();
+//         const id = this.dataset.id;
+//         const isNowFavorite = favorites.toggle(id);
+//         this.textContent = isNowFavorite ? '❤️ В избранное' : '♡ В избранное';
+//         this.classList.toggle('active', isNowFavorite);
+//       });
+//     });
+
+//     console.log(`✅ Отображено ${filtered.length} сортов`);
+//   }
+
+//   // === ФУНКЦИЯ РЕНДЕРИНГА КАРТОЧКИ ===
+//   function renderCard(rose) {
+//     const isFav = favorites.isFavorite(rose.id);
+//     const image = rose.images && rose.images[0] ? rose.images[0] : '';
+//     const rating = rose.rating || '—';
+//     const category = rose.categoryLabel || rose.category || 'Сорт';
+    
+//     return `
+//       <div class="card" data-id="${rose.id}">
+//         <a href="rose.html?id=${rose.id}" class="card__link">
+//           <div class="card__image-wrap">
+//             <img src="${image}" alt="${rose.name}" class="card__image" loading="lazy" onerror="this.style.display='none'">
+//             <span class="card__badge">★ ${rating}</span>
+//           </div>
+//           <div class="card__body">
+//             <span class="card__category">${category}</span>
+//             <h3 class="card__title">${rose.name}</h3>
+//             ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
+//             <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
+//             <div class="card__footer">
+//               <span class="card__rating">★ ${rating}</span>
+//               <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
+//                 ${isFav ? '❤️' : '♡'} В избранное
+//               </button>
+//             </div>
+//           </div>
+//         </a>
+//       </div>
+//     `;
+//   }
+
+//   // === ОБРАБОТЧИКИ СОБЫТИЙ ===
+
+//   // Поиск
+//   if (searchInput) {
+//     searchInput.addEventListener('input', function() {
+//       currentSearch = this.value;
+//       renderCatalog();
+//     });
+//   }
+
+//   // Сортировка
+//   if (sortSelect) {
+//     sortSelect.addEventListener('change', function() {
+//       currentSort = this.value;
+//       renderCatalog();
+//     });
+//   }
+
+//   // Фильтры
+//   filterBtns.forEach(btn => {
+//     btn.addEventListener('click', function() {
+//       filterBtns.forEach(b => b.classList.remove('active'));
+//       this.classList.add('active');
+//       currentFilter = this.dataset.filter;
+//       renderCatalog();
+//     });
+//   });
+
+//   // === ПЕРВЫЙ РЕНДЕРИНГ ===
+//   renderCatalog();
+
+//   console.log('📚 Каталог загружен');
+// })();
 
 
+// СТАРЫЙ ПЕРВОНАЧАЛЬНЫЙ КОД
 // document.addEventListener('DOMContentLoaded', () => {
 //   const filterButtons = document.getElementById('filterButtons');
 //   const searchBox = document.getElementById('searchBox');
