@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.createElement('div');
     header.className = 'favorites-header';
     header.innerHTML = `
-      <h1>Избранное</h1>
+     
       <span class="favorites-header__count">${count} ${word}</span>
     `;
     container.appendChild(header);

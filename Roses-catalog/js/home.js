@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const featured = roses
     .slice()
     .sort((a, b) => getRatingValue(b) - getRatingValue(a))
-    .slice(0, 4);
+    .slice(0, 6);
 
   featured.forEach(rose => {
     featuredContainer.appendChild(createFeaturedCard(rose));

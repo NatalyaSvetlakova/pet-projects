@@ -11,7 +11,13 @@
 
   <header class="header">
     <nav class="nav">
-      <a href="index.html" class="nav__logo"><span>🌹</span> Азбука Роз</a>
+      <a href="index.html" class="nav__logo" aria-label="Азбука Роз — на главную">
+  <span class="nav__logo-mark" aria-hidden="true">🌹</span>
+  <span class="nav__logo-text">
+    <span class="nav__logo-title">Азбука Роз</span>
+    <span class="nav__logo-sub">каталог сортов</span>
+  </span>
+</a>
       <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')">☰</button>
       <ul class="nav__links">
         <li><a href="index.html" class="active">Главная</a></li>
@@ -52,6 +58,16 @@
       <a href="catalog.html" class="btn btn--center">Смотреть все сорта</a>
     </section>
 
+    <!-- ===== ПОСЛЕДНИЕ ОТЗЫВЫ ===== -->
+    <section class="section" id="latestReviewsSection" style="padding-top: 0;">
+      <h2 class="section__title">Отзывы посетителей</h2>
+      <p class="section__subtitle">Что пишут о наших розах</p>
+
+      <div class="latest-reviews" id="latestReviews">
+        <!-- сюда home-reviews.js отрендерит карточки отзывов -->
+      </div>
+    </section> 
+
   </main>
 
   <footer class="footer">
@@ -59,9 +75,12 @@
   </footer>
 
   <script src="js/data.js"></script>
-  <script src="js/favorites.js"></script>  
+  <script src="js/favorites.js"></script> 
+  <script src="js/reviews.js"></script>  
   <script src="js/slider.js"></script>
   <script src="js/home.js"></script>
+  <script src="js/home-reviews.js"></script>
+  
   <script>
     // === СЛАЙДЕР НА ГЛАВНОЙ ===
     (function() {

@@ -10,7 +10,13 @@
 
   <header class="header">
     <nav class="nav">
-      <a href="index.html" class="nav__logo"><span>🌹</span> Азбука Роз</a>
+      <a href="index.html" class="nav__logo" aria-label="Азбука Роз — на главную">
+        <span class="nav__logo-mark" aria-hidden="true">🌹</span>
+        <span class="nav__logo-text">
+          <span class="nav__logo-title">Азбука Роз</span>
+          <span class="nav__logo-sub">каталог сортов</span>
+        </span>
+      </a>
       <button class="nav__toggle" onclick="document.querySelector('.nav__links').classList.toggle('open')">☰</button>
       <ul class="nav__links">
         <li><a href="index.html">Главная</a></li>
