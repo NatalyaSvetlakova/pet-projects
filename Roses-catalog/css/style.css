@@ -882,7 +882,7 @@ background: rgba(255,255,255,0.3) !important;
   font-size: 18px;
   line-height: 1;
   letter-spacing: 2px;
-  ,font-family: Times; /* символ ★ */
+  font-family: Times; /* символ ★ */
 }
 
 .stars::before {
