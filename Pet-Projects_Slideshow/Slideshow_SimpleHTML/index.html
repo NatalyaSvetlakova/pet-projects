@@ -8,7 +8,7 @@
         <!-- Указывает кодировку документа (UTF‑8). Гарантирует корректное отображение кириллицы, спецсимволов и эмодзи. -->
         <title>Слайд-шоу</title>
         <!-- Заголовок вкладки браузера. Отображается в верхней части окна и в результатах поиска. -->
-        <link rel="stylesheet" href="/Slideshow_SimpleHTML/styles/style.css" />
+        <link rel="stylesheet" href="/Pet-Projects_Slideshow/Slideshow_SimpleHTML/styles/style.css" />
         <!-- Подключает внешний CSS‑файл со стилями. Путь styles/style.css означает, что файл style.css лежит в папке styles внутри текущей директории. -->
     </head>
     <body>
@@ -112,13 +112,13 @@
             <!-- </div> - это закрывающий тег HTML-элемента <div>. В HTML почти все элементы парные. (<div>) открывает контейнер, кладет туда содержимое (текст, картинки, другие контейнеры), а затем закрывает его (</div>). -->     
             <div class="phone-home"></div>
             <!-- Декоративный элемент корпуса телефона (имитация кнопки). Класс phone-home позволяет стилизовать его отдельно. -->              
-        <audio id="soundCamera" src="/Slideshow_SimpleHTML/sounds/quick_camera_click.wav" preload="auto"></audio>
+        <audio id="soundCamera" src="/Pet-Projects_Slideshow/Slideshow_SimpleHTML/sounds/quick_camera_click.wav" preload="auto"></audio>
         <!-- Аудиофайл щелчка камеры. id="soundCamera" нужен, чтобы из JS вызывать .play() при определенных действиях (например, при клике и смене слайда). preload="auto" говорит браузеру заранее загрузить файл, чтобы воспроизведение было мгновенным. -->        
-        <audio id="soundButton" src="/Slideshow_SimpleHTML/sounds/pressing_a_button.wav" preload="auto"></audio>
+        <audio id="soundButton" src="/Pet-Projects_Slideshow/Slideshow_SimpleHTML/sounds/pressing_a_button.wav" preload="auto"></audio>
         <!-- Аудиофайл щелчка нажатия кнопки. id="soundButton" - для управления из JS. preload="auto" аналогично ускоряет готовность звука к воспроизведению. -->
-        <audio id="bgMusic" src="/Slideshow_SimpleHTML/sounds/Sommnia_Peter_Gregson.wav" loop preload></audio>
+        <audio id="bgMusic" src="/Pet-Projects_Slideshow/Slideshow_SimpleHTML/sounds/Sommnia_Peter_Gregson.wav" loop preload></audio>
         <!-- Аудиофайл фоновой музыки с id="bgMusic". loop - зацикливание трека. Плеер не виден на странице - аудиофайл фоновой музыки управляется только через JS. -->
-        <script src="/Slideshow_SimpleHTML/dist/main.js"></script>
+        <script src="/Pet-Projects_Slideshow/Slideshow_SimpleHTML/dist/main.js"></script>
         <!-- Подключение основного JS‑файла, который управляет слайд‑шоу (переключение фото, обновление заголовка, проигрывание звуков, эффекты вспышки и т.д.). Путь dist/main.js означает, что скрипт лежит в папке dist. -->
     </body>
     <!--Закрывающий тег - означает: «здесь заканчивается видимая часть». -->
