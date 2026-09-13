@@ -474,6 +474,20 @@ background: rgba(255,255,255,0.3) !important;
   margin: 0 0 8px 0;
 }
 
+.card__medal {
+   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3em;
+  height: 1.3em;
+  margin-right: 6px;
+  vertical-align: -3px;
+  background: linear-gradient(135deg, #fff6d6, #ffe9a3);
+  border-radius: 50%;
+  font-size: 0.85em;
+  box-shadow: 0 2px 6px rgba(245, 179, 1, 0.35);
+}
+
 .card__desc {
   font-size: 0.95rem;
   color: var(--color-text-muted);
@@ -965,34 +979,130 @@ background: rgba(255,255,255,0.3) !important;
   color: #fff;
 }
 
+/* =========================================================
+   РЕЙТИНГ НА КАРТОЧКЕ СОРТА — премиум-стиль
+   ========================================================= */
+
+/* --- Бейдж на фото: стеклянная капсула --- */
+.card__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 6px 11px 6px 9px;
+  border-radius: 100px;
+
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  color: #2c3e50;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+
+  transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s;
+  pointer-events: none;
+}
+.card:hover .card__badge {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.card__badge-star {
+  color: #f5b301;
+  font-size: 0.95em;
+  line-height: 1;
+  filter: drop-shadow(0 0 4px rgba(245, 179, 1, 0.5));
+}
+.card__badge-value {
+  letter-spacing: 0.2px;
+}
+
+/* --- Строка со звёздами в подвале карточки --- */
 .stars-wrapper {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.15s ease;
+  gap: 8px;
 }
-.stars-wrapper:hover {
-  transform: scale(1.05);
-}
+
 .stars-visual {
-  --rating: 4.5; /* значение подставится из JS */
-  --percent: calc(var(--rating) / 5 * 100%);
+  --rating: 0;
+  --star-size: 17px;
+  --star-color: #f5b301;
+  --star-empty: #ececec;
+
   display: inline-block;
-  font-size: 16px;
+  position: relative;
+  font-family: Arial, sans-serif;
+  font-size: var(--star-size);
   line-height: 1;
+  letter-spacing: 3px;
+  white-space: nowrap;
+  user-select: none;
+  vertical-align: middle;
+  color: var(--star-empty);
 }
 .stars-visual::before {
-  content: '★★★★★';
-  background: linear-gradient(90deg, #ffc107 var(--percent), #e0e0e0 var(--percent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  content: "★★★★★";
+  color: var(--star-empty);
 }
+.stars-visual::after {
+  content: "★★★★★";
+  position: absolute;
+  inset: 0;
+  color: var(--star-color);
+  width: calc(var(--rating) / 5 * 100%);
+  overflow: hidden;
+  white-space: nowrap;
+
+  /* плавная заливка + мягкое свечение */
+  transition: width 1s cubic-bezier(.34, 1.3, .64, 1);
+  will-change: width;
+  filter: drop-shadow(0 0 3px rgba(245, 179, 1, 0.35));
+}
+.card:hover .stars-visual::after {
+  filter: drop-shadow(0 0 6px rgba(245, 179, 1, 0.65));
+}
+
+/* --- Счётчик отзывов: мягкая серая капсула --- */
 .rating-count {
-  color: #666;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 26px;
+  padding: 2px 7px;
+
+  background: #f4f4f6;
+  color: #7a7a86;
+  border-radius: 100px;
+
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+
+  transition: background-color .3s, color .3s;
+}
+.card:hover .rating-count {
+  background: #ecdfe4;
+  color: #b72e4a;
 }
 
 /* === Страница избранного === */

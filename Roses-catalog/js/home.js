@@ -3,16 +3,48 @@
    Использует API из favorites.js: isInFavorites / toggleFavorite
    ========================================================= */
 
-// === Средний рейтинг (как в catalog.js) ===
-function getRatingValue(rose) {
-  if (rose.rating !== undefined && rose.rating !== null) {
-    return parseFloat(rose.rating);
+// Объединённый рейтинг (base из data.js + отзывы пользователя)
+function getMerged(rose) {
+  if (window.RoseRatings && RoseRatings.getMergedRating) {
+    return RoseRatings.getMergedRating(rose.id);
   }
-  if (rose.reviews && rose.reviews.length > 0) {
-    const sum = rose.reviews.reduce((acc, curr) => acc + (curr.score || 0), 0);
-    return (sum / rose.reviews.length).toFixed(1);
-  }
-  return 0;
+  const arr = Array.isArray(rose.reviews) ? rose.reviews : [];
+  const sum = arr.reduce((s, r) => s + (Number(r.score) || 0), 0);
+  const avg = arr.length ? sum / arr.length : (parseFloat(rose.rating) || 0);
+  return { avg: Math.round(avg * 10) / 10, count: arr.length };
+}
+
+// Средний рейтинг по всему каталогу (нужен для байесовского сглаживания)
+function getGlobalAverage() {
+  let sum = 0, count = 0;
+  roses.forEach(rose => {
+    (rose.reviews || []).forEach(r => {
+      const s = Number(r.score);
+      if (s >= 1 && s <= 5) { sum += s; count++; }
+    });
+  });
+  return count ? sum / count : 4.5;
+}
+
+// «Реалистичный» рейтинг: защищает от 1 отзыва с оценкой 5
+// Формула: (sum + K * globalAvg) / (count + K), K — сила сглаживания
+function getRankingScore(rose, K = 5) {
+  const arr = Array.isArray(rose.reviews) ? rose.reviews : [];
+  const baseSum = arr.reduce((s, r) => s + (Number(r.score) || 0), 0);
+  const baseCount = arr.length;
+
+  const userReviews = (window.RoseRatings && RoseRatings.getUserReviews)
+    ? RoseRatings.getUserReviews(rose.id) : [];
+  const userSum = userReviews.reduce((s, r) => s + (Number(r.rating) || 0), 0);
+  const userCount = userReviews.length;
+
+  const sum = baseSum + userSum;
+  const count = baseCount + userCount;
+  const globalAvg = getGlobalAverage();
+
+  // При count = 0 даёт globalAvg; при count >> K — почти чистый средний
+  const score = (sum + K * globalAvg) / (count + K);
+  return { score, avg: count ? Math.round((sum / count) * 10) / 10 : 0, count };
 }
 
 // === Корректный путь к картинке ===
@@ -22,6 +54,7 @@ function getImageSrc(rose) {
     if (!fileName) return '';
     return fileName.includes('/') ? fileName : `img/${fileName}`;
   }
+  
   return '';
 }
 
@@ -34,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Слайдер ---
   const sliderData = roses
     .slice()
-    .sort((a, b) => getRatingValue(b) - getRatingValue(a))
+    .sort((a, b) => getRankingScore(b).score - getRankingScore(a).score)
     .slice(0, 50)
     .map(rose => ({
       image: getImageSrc(rose),
@@ -62,28 +95,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const featured = roses
     .slice()
-    .sort((a, b) => getRatingValue(b) - getRatingValue(a))
+    .sort((a, b) => getRankingScore(b).score - getRankingScore(a).score)
     .slice(0, 6);
 
-  featured.forEach(rose => {
-    featuredContainer.appendChild(createFeaturedCard(rose));
+  featured.forEach((rose, i) => {
+    featuredContainer.appendChild(createFeaturedCard(rose, i + 1));
   });
+  if (window.RoseRatings && RoseRatings.onChange) {
+  RoseRatings.onChange(() => {
+    const container = document.getElementById('featuredCards');
+    if (!container) return;
+    container.innerHTML = '';
+    roses
+      .slice()
+      .sort((a, b) => getRankingScore(b).score - getRankingScore(a).score)
+      .slice(0, 6)
+      .forEach((rose, i) => container.appendChild(createFeaturedCard(rose, i + 1)));
+
+    // и, если есть, слайдер тоже можно перестроить
+    // (если он держит своё состояние — лучше перезагрузить страницу,
+    //  либо у RoseSlider должен быть метод update())
+  });
+}
 });
 
 // === Карточка (единый вид с catalog.js) ===
-function createFeaturedCard(rose) {
+function createFeaturedCard(rose, rank) {
   const card = document.createElement('div');
   card.className = 'card';
   card.dataset.id = rose.id;
 
-  // ✅ API из favorites.js
   const isFav = typeof isInFavorites === 'function' && isInFavorites(rose.id);
-
-  const ratingNum    = getRatingValue(rose);
-  const ratingText   = ratingNum > 0 ? `${ratingNum} ★` : '—';
-  const reviewsCount = rose.reviews ? rose.reviews.length : 0;
-  const category     = rose.categoryLabel || rose.category || 'Сорт';
-  const imageSrc     = getImageSrc(rose);
+  const { avg: ratingNum, count: reviewsCount } = getMerged(rose);
+  const category = rose.categoryLabel || rose.category || 'Сорт';
+  const imageSrc = getImageSrc(rose);
+  const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
 
   card.innerHTML = `
     <a href="rose.html?id=${rose.id}" class="card__link">
@@ -91,17 +137,24 @@ function createFeaturedCard(rose) {
         <img src="${imageSrc}" alt="${rose.name || 'Роза'}"
              class="card__image" loading="lazy"
              onerror="this.style.display='none'">
-        <span class="card__badge">${ratingText}</span>
+        ${ratingNum > 0 ? `
+          <span class="card__badge" data-rating="${ratingNum}">
+            <span class="card__badge-star" aria-hidden="true">★</span>
+            <span class="card__badge-value">0.0</span>
+          </span>
+        ` : ''}
       </div>
       <div class="card__body">
         <span class="card__category">${category}</span>
-        <h3 class="card__title">${rose.name || 'Без названия'}</h3>
+        <h3 class="card__title">
+          ${medal ? `<span class="card__medal">${medal}</span> ` : ''}${rose.name || 'Без названия'}
+        </h3>
         ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
         <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
         <div class="card__footer">
           <div class="stars-wrapper">
-            <span class="stars-visual" style="--rating: ${ratingNum}"></span>
-            ${reviewsCount > 0 ? `<span class="rating-count">(${reviewsCount})</span>` : ''}
+            <span class="stars-visual" data-rating="${ratingNum}" style="--rating:0" aria-label="Рейтинг ${ratingNum} из 5"></span>
+            ${reviewsCount > 0 ? `<span class="rating-count">${reviewsCount}</span>` : ''}
           </div>
           <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
             ${isFav ? '❤️' : '♡'} В избранное
@@ -111,14 +164,46 @@ function createFeaturedCard(rose) {
     </a>
   `;
 
+  // --- Анимация: цифра счётчиком, звёзды — заливкой ---
+  const badge = card.querySelector('.card__badge[data-rating]');
+  if (badge) {
+    const valueEl = badge.querySelector('.card__badge-value');
+    if (valueEl) animateNumber(valueEl, parseFloat(badge.dataset.rating));
+  }
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      card.querySelectorAll('.stars-visual[data-rating]').forEach(el => {
+        el.style.setProperty('--rating', el.dataset.rating);
+      });
+    });
+  });
+
+  // --- Избранное ---
   const favBtn = card.querySelector('.card__fav-btn');
   favBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
+    const id = favBtn.dataset.id;
     if (typeof toggleFavorite === 'function') {
-      toggleFavorite(favBtn.dataset.id, favBtn);  // ✅ API из favorites.js
+      toggleFavorite(id, favBtn);
+      const nowFav = typeof isInFavorites === 'function' && isInFavorites(id);
+      favBtn.textContent = nowFav ? '❤️ В избранное' : '♡ В избранное';
+      favBtn.classList.toggle('active', nowFav);
     }
   });
 
   return card;
+}
+
+// Плавный счётчик
+function animateNumber(el, target) {
+  const dur = 800;
+  const t0 = performance.now();
+  function tick(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = (target * eased).toFixed(1);
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }

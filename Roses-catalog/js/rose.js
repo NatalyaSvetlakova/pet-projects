@@ -7,6 +7,20 @@
 // (ОБЪЯВЛЕНО СВЕРХУ, ЧТОБЫ БЫЛО ДОСТУПНО ВЕЗДЕ)
 // ============================================
 
+// ============================================
+// УТИЛИТЫ — ГЛОБАЛЬНЫЕ (доступны всем функциям)
+// ============================================
+
+// ← ДОБАВЛЕНО: escapeHtml вынесена наверх, теперь доступна и в отзывах, и в вопросах
+window.escapeHtml = function(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
 window.getHelpfulCount = function(roseId, reviewId) {
   const key = `helpful_${roseId}_${reviewId}`;
   const count = localStorage.getItem(key + '_count');
@@ -158,7 +172,8 @@ window.toggleReviewHelpful = function(button, roseId, reviewId) {
     console.warn('⚠️ initReviews не найдена');
   }
 
-  // Инициализация вопросов (привязка к конкретному сорту через rose.id)
+  // ← ИЗМЕНЕНО: инициализация вопросов — теперь это единственная точка входа,
+  //   инлайн-скрипт из rose.html удалён
   if (typeof initQuestions === 'function') {
     initQuestions(rose);
   } else {
@@ -358,14 +373,14 @@ function initReviews(rose) {
     return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  function escapeHtml(s) {
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
+//   function escapeHtml(s) {
+//     return String(s)
+//       .replace(/&/g, '&amp;')
+//       .replace(/</g, '&lt;')
+//       .replace(/>/g, '&gt;')
+//       .replace(/"/g, '&quot;')
+//       .replace(/'/g, '&#39;');
+//   }
 
   renderReviews();
 }

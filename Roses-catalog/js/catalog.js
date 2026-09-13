@@ -2,17 +2,17 @@
   console.log('📚 Загрузка каталога...');
 
   // === ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: Расчет рейтинга из отзывов ===
-  // Если в данных нет поля rating, считаем среднее из отзывов (поле score)
-  function getRatingValue(rose) {
-    if (rose.rating !== undefined && rose.rating !== null) {
-      return parseFloat(rose.rating);
-    }
-    if (rose.reviews && rose.reviews.length > 0) {
-      const sum = rose.reviews.reduce((acc, curr) => acc + (curr.score || 0), 0);
-      return (sum / rose.reviews.length).toFixed(1);
-    }
-    return 0;
+  // Берёт объединённый рейтинг: отзывы из data.js + отзывы пользователя
+function getMerged(rose) {
+  if (window.RoseRatings && RoseRatings.getMergedRating) {
+    return RoseRatings.getMergedRating(rose.id);
   }
+  // Fallback — если RoseRatings почему-то не загрузился
+  const arr = Array.isArray(rose.reviews) ? rose.reviews : [];
+  const sum = arr.reduce((s, r) => s + (Number(r.score) || 0), 0);
+  const avg = arr.length ? sum / arr.length : (parseFloat(rose.rating) || 0);
+  return { avg: Math.round(avg * 10) / 10, count: arr.length };
+}
 
   // === ПОЛУЧАЕМ ЭЛЕМЕНТЫ ===
   const container = document.getElementById('catalogCards');
@@ -54,11 +54,7 @@
     // 3. Сортировка (ОБНОВЛЕНО: используем нашу функцию getRatingValue)
     switch (currentSort) {
       case 'rating':
-        filtered.sort((a, b) => {
-          const ratingA = getRatingValue(a);
-          const ratingB = getRatingValue(b);
-          return (ratingB || 0) - (ratingA || 0); // Сортировка по убыванию
-        });
+        filtered.sort((a, b) => getMerged(b).avg - getMerged(a).avg);
         break;
       case 'name':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -86,17 +82,31 @@
 
     container.innerHTML = filtered.map(rose => renderCard(rose)).join('');
 
-    // Вешаем обработчики на кнопки "В избранное" (БЕЗ ИЗМЕНЕНИЙ)
-    container.querySelectorAll('.card__fav-btn').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();     // ← ОТМЕНЯЕТ переход по <a href>
-        e.stopPropagation();
-        const id = this.dataset.id;
-        toggleFavorite(id, btn);
-        this.textContent = isNowFavorite ? '❤️ В избранное' : '♡ В избранное';
-        this.classList.toggle('active', isNowFavorite);
+    // Анимация: цифра в бейдже — счётчиком, звёзды — плавной заливкой
+  container.querySelectorAll('.card__badge[data-rating]').forEach(badge => {
+    const valueEl = badge.querySelector('.card__badge-value');
+    if (valueEl) animateNumber(valueEl, parseFloat(badge.dataset.rating), '');
+  });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      container.querySelectorAll('.stars-visual[data-rating]').forEach(el => {
+        el.style.setProperty('--rating', el.dataset.rating);
       });
     });
+  });
+
+    // Вешаем обработчики на кнопки "В избранное" (БЕЗ ИЗМЕНЕНИЙ)
+    container.querySelectorAll('.card__fav-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = this.dataset.id;
+    toggleFavorite(id, this);                    // функция сама переключит состояние
+    const isNowFavorite = isInFavorites(id);     // ← читаем новое состояние
+    this.textContent = isNowFavorite ? '❤️ В избранное' : '♡ В избранное';
+    this.classList.toggle('active', isNowFavorite);
+  });
+});
 
     console.log(`✅ Отображено ${filtered.length} сортов`);
   }
@@ -126,39 +136,41 @@
     }
     // ---------------------------------------
 
-    const ratingNum = getRatingValue(rose);
-    const ratingText = ratingNum > 0 ? `${ratingNum} ★` : '—';
-    const reviewsCount = rose.reviews ? rose.reviews.length : 0;
+    const { avg: ratingNum, count: reviewsCount } = getMerged(rose);
+    const ratingText = ratingNum > 0 ? `${ratingNum.toFixed(1)} ★` : '—';
     const category = rose.categoryLabel || rose.category || 'Сорт';
 
     // ВАЖНО: Вся строка ниже должна быть строго в обратных кавычках ` ... `
     return `
-      <div class="card" data-id="${rose.id}">
-        <a href="rose.html?id=${rose.id}" class="card__link">
-          <div class="card__image-wrap">
-            <!-- Вставляем готовый путь imageSrc -->
-            <img src="${imageSrc}" alt="${rose.name}" class="card__image" loading="lazy" onerror="this.style.display='none'">
-            <span class="card__badge">${ratingText}</span>
-          </div>
-          <div class="card__body">
-            <span class="card__category">${category}</span>
-            <h3 class="card__title">${rose.name}</h3>
-            ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
-            <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
-            <div class="card__footer">
-              <div class="stars-wrapper">
-                <span class="stars-visual" style="--rating: ${ratingNum}"></span>
-                ${reviewsCount > 0 ? `<span class="rating-count">(${reviewsCount})</span>` : ''}
-              </div>
-              
-              <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
-                ${isFav ? '❤️' : '♡'} В избранное
-              </button>
-            </div>
-          </div>
-        </a>
+     <div class="card" data-id="${rose.id}">
+    <a href="rose.html?id=${rose.id}" class="card__link">
+      <div class="card__image-wrap">
+        <img src="${imageSrc}" alt="${rose.name}" class="card__image" loading="lazy" onerror="this.style.display='none'">
+        ${ratingNum > 0 ? `
+          <span class="card__badge" data-rating="${ratingNum}">
+            <span class="card__badge-star" aria-hidden="true">★</span>
+            <span class="card__badge-value">0.0</span>
+          </span>
+        ` : ''}
       </div>
-    `;
+      <div class="card__body">
+        <span class="card__category">${category}</span>
+        <h3 class="card__title">${rose.name}</h3>
+        ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
+        <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
+        <div class="card__footer">
+          <div class="stars-wrapper">
+            <span class="stars-visual" data-rating="${ratingNum}" style="--rating:0" aria-label="Рейтинг ${ratingNum} из 5"></span>
+            ${reviewsCount > 0 ? `<span class="rating-count">${reviewsCount}</span>` : ''}
+          </div>
+          <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
+            ${isFav ? '❤️' : '♡'} В избранное
+          </button>
+        </div>
+      </div>
+    </a>
+  </div>
+`;
   }
 
   // === ОБРАБОТЧИКИ СОБЫТИЙ (БЕЗ ИЗМЕНЕНИЙ) ===
@@ -185,6 +197,20 @@
       renderCatalog();
     });
   });
+
+  // Плавный счётчик для цифры рейтинга
+  function animateNumber(el, target, suffix = '') {
+  const dur = 800;
+  const t0 = performance.now();
+  function tick(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = target * eased;
+    el.textContent = val.toFixed(1) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
 
   // === ПЕРВЫЙ РЕНДЕРИНГ ===
   renderCatalog();

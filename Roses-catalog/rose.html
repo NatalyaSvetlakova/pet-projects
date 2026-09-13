@@ -1220,227 +1220,203 @@
 
   <!-- ===== СКРИПТЫ ===== -->
   <script src="js/data.js"></script>
-  <script src="js/favorites.js"></script>
+  <script src="js/favorites.js"></script>  
   <script src="js/reviews.js"></script>
-  <script src="js/qna.js"></script>
   <script src="js/slider.js"></script>
   <script src="js/rose.js"></script>
-  <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ==========================================
-    // 0. ИНИЦИАЛИЗАЦИЯ И ХРАНИЛИЩЕ
-    // ==========================================
-    const urlParams = new URLSearchParams(window.location.search);
-    const roseId = urlParams.get('id') || 'unknown';
-    const storageKey = `qna_${roseId}`; // Уникальный ключ для каждого сорта розы
 
-    let qnaData = []; // Здесь будем хранить все вопросы и ответы
+  <!-- Данные Q&A -->
+  <script src="js/qna.js"></script>
 
-    // Функция сохранения в localStorage
-    function saveQna() {
-        localStorage.setItem(storageKey, JSON.stringify(qnaData));
-    }
+    <!-- Логика вкладки «Вопросы» -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // ---- ID сорта из адреса: rose.html?id=имя_сорта ----
+        const urlParams = new URLSearchParams(window.location.search);
+        const roseId = urlParams.get('id') || 'unknown';
 
-    // Функция загрузки из localStorage
-    function loadQna() {
-        const saved = localStorage.getItem(storageKey);
-        if (saved) {
-            try {
-                qnaData = JSON.parse(saved);
-            } catch (e) {
-                console.error("Ошибка при чтении данных Q&A:", e);
-                qnaData = [];
+        // ==========================================
+        // 1. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+        // ==========================================
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const targetId = btn.getAttribute('data-tab');
+                const target = document.getElementById(targetId);
+                if (target) target.classList.add('active');
+            });
+        });
+
+        // ==========================================
+        // 2. КНОПКА «ПОЛЕЗНО»
+        // ==========================================
+        window.toggleHelpful = function (button) {
+            const card = button.closest('.question-card');
+            const qId = parseInt(card.dataset.id, 10);
+            const q = getQuestions(roseId).find(item => item.id === qId);
+            if (!q) return;
+
+            let count = parseInt(button.querySelector('.helpful-count').textContent, 10) || 0;
+            if (button.classList.contains('active')) {
+                button.classList.remove('active');
+                count = Math.max(0, count - 1);
+            } else {
+                button.classList.add('active');
+                count += 1;
             }
-        } else {
-            // Нет данных — начинаем с пустого списка
-            qnaData = [];          
-        }
-        renderQuestions();
-    }
+            button.querySelector('.helpful-count').textContent = count;
+            updateQuestionLikes(roseId, qId, count);
+        };
 
-    // ==========================================
-    // 1. ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК
-    // ==========================================
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+        // ==========================================
+        // 3. ОТКРЫТИЕ ФОРМЫ ОТВЕТА
+        // ==========================================
+        window.toggleReplyForm = function (button) {
+            const card = button.closest('.question-card');
+            const form = card.querySelector('.reply-form');
+            document.querySelectorAll('.reply-form.active').forEach(f => {
+                if (f !== form) f.classList.remove('active');
+            });
+            form.classList.toggle('active');
+            if (form.classList.contains('active')) {
+                form.querySelector('textarea').focus();
+            }
+        };
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            const targetId = btn.getAttribute('data-tab');
-            document.getElementById(targetId).classList.add('active');
-        });
-    });
-
-    // ==========================================
-    // 2. ЛОГИКА КНОПОК "ПОЛЕЗНО"
-    // ==========================================
-    window.toggleHelpful = function(button) {
-        const card = button.closest('.question-card');
-        const qId = parseInt(card.dataset.id);
-        const q = qnaData.find(item => item.id === qId);
-        if (!q) return;
-
-        let count = parseInt(button.querySelector('.helpful-count').textContent) || 0;
-
-        if (button.classList.contains('active')) {
-            button.classList.remove('active');
-            count = Math.max(0, count - 1);
-        } else {
-            button.classList.add('active');
-            count += 1;
-        }
-        
-        button.querySelector('.helpful-count').textContent = count;
-        q.likes = count; // Обновляем данные
-        saveQna(); // Сохраняем в localStorage
-    };
-
-    // ==========================================
-    // 3. ЛОГИКА ОТКРЫТИЯ ФОРМЫ ОТВЕТА
-    // ==========================================
-    window.toggleReplyForm = function(button) {
-        const card = button.closest('.question-card');
-        const form = card.querySelector('.reply-form');
-        
-        document.querySelectorAll('.reply-form.active').forEach(f => {
-            if (f !== form) f.classList.remove('active');
-        });
-
-        form.classList.toggle('active');
-        if (form.classList.contains('active')) {
-            form.querySelector('textarea').focus();
-        }
-    };
-
-    // ==========================================
-    // 4. ЛОГИКА ОТПРАВКИ ОТВЕТА
-    // ==========================================
-    window.submitReply = function(event, form) {
-        event.preventDefault();
-        
-        const text = form.querySelector('textarea').value.trim();
-        const authorInput = form.querySelector('.reply-author-input');
-        const author = authorInput ? authorInput.value.trim() : 'Гость';
-        
-        if (!text) return;
-
-        const card = form.closest('.question-card');
-        const qId = parseInt(card.dataset.id);
-        const q = qnaData.find(item => item.id === qId);
-        
-        if (q) {
-            q.replies.push({ author: author, text: text });
-            saveQna(); // Сохраняем в localStorage
-            renderQuestions(); // Перерисовываем список
-        }
-    };
-
-    // ==========================================
-    // 5. ЛОГИКА ДОБАВЛЕНИЯ НОВОГО ВОПРОСА
-    // ==========================================
-    const questionForm = document.getElementById('questionForm');
-    if (questionForm) {
-        questionForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const text = document.getElementById('questionText').value.trim();
-            const authorInput = document.getElementById('questionAuthor');
+        // ==========================================
+        // 4. ОТПРАВКА ОТВЕТА
+        // ==========================================
+        window.submitReply = function (event, form) {
+            event.preventDefault();
+            const text = form.querySelector('textarea').value.trim();
+            const authorInput = form.querySelector('.reply-author-input');
             const author = authorInput ? authorInput.value.trim() : 'Гость';
-            
             if (!text) return;
 
-            const newQuestion = {
-                id: Date.now(),
-                author: author,
-                date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-                text: text,
-                likes: 0,
-                replies: []
-            };
+            const card = form.closest('.question-card');
+            const qId = parseInt(card.dataset.id, 10);
+            addReply(roseId, qId, text, author);
+            renderQuestions();
+        };
 
-            qnaData.unshift(newQuestion); // Добавляем в начало массива
-            saveQna(); // Сохраняем
-            renderQuestions(); // Перерисовываем
-            questionForm.reset(); // Очищаем форму
-        });
-    }
+        // ==========================================
+        // 5. ДОБАВЛЕНИЕ НОВОГО ВОПРОСА
+        // ==========================================
+        const questionForm = document.getElementById('questionForm');
+        if (questionForm) {
+            questionForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = document.getElementById('questionText').value.trim();
+                const authorInput = document.getElementById('questionAuthor');
+                const author = authorInput ? authorInput.value.trim() : 'Гость';
+                if (!text) return;
 
-    // ==========================================
-    // 6. ФУНКЦИЯ ОТРИСОВКИ ВОПРОСОВ И ОТВЕТОВ
-    // ==========================================
-    function renderQuestions() {
-        const container = document.getElementById('questionsList');
-        const questionsCount = document.getElementById('questionsCount');
-        
-        if (!container) return;
-        
-        container.innerHTML = ''; // Очищаем контейнер
+                addQuestion(roseId, text, author);
+                renderQuestions();
+                questionForm.reset();
+            });
+        }
 
-        qnaData.forEach(q => {
-            // Формируем HTML для ответов
-            let repliesHtml = q.replies.map(r => `
-                <div class="reply-item">
-                    <div class="reply-author">${r.author}</div>
-                    <div class="reply-text">${r.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-                </div>
-            `).join('');
+        // ==========================================
+        // 6. РЕНДЕР СПИСКА ВОПРОСОВ
+        // ==========================================
+        function renderQuestions() {
+            const container = document.getElementById('questionsList');
+            const questionsCount = document.getElementById('questionsCount');
+            if (!container) return;
 
-            const card = document.createElement('div');
-            card.className = 'question-card';
-            card.dataset.id = q.id; // Привязываем ID к DOM-элементу
+            const qnaData = getQuestions(roseId);
+            container.innerHTML = '';
 
-            card.innerHTML = `
-                <div class="question-header">
-                    <div class="user-info">
-                        <div class="avatar">${q.author.charAt(0).toUpperCase()}</div>
-                        <div>
-                            <div class="user-name">${q.author}</div>
-                            <div class="review-meta">${q.date}</div>
+            qnaData.forEach(q => {
+                const repliesHtml = (q.replies || []).map(r => `
+                    <div class="reply-item">
+                        <div class="reply-author">${r.author}</div>
+                        <div class="reply-text">${(r.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                    </div>
+                `).join('');
+
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.dataset.id = q.id;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <div class="user-info">
+                            <div class="avatar">${q.author.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div class="user-name">${q.author}</div>
+                                <div class="review-meta">${q.date}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="question-text">${q.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-                
-                <div class="question-replies">
-                    ${repliesHtml}
-                </div>
+                    <div class="question-text">${q.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
 
-                <div class="question-footer">
-                    <button class="helpful-btn ${q.likes > 0 ? 'active' : ''}" onclick="toggleHelpful(this)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                        <span class="helpful-count">${q.likes}</span>
-                    </button>
-                    <button class="reply-btn" onclick="toggleReplyForm(this)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                            <polyline points="16 8 12 12 8 8"></polyline>
-                        </svg>
-                        Ответить
-                    </button>
-                </div>
+                    <div class="question-replies">${repliesHtml}</div>
 
-                <form class="reply-form" onsubmit="submitReply(event, this)">
-                    <input type="text" class="reply-author-input" placeholder="Ваше имя" style="width:100%; padding:8px 12px; margin-bottom:8px; border:1px solid #eaeaea; border-radius:8px; box-sizing:border-box;">
-                    <textarea placeholder="Напишите ваш ответ..." required></textarea>
-                    <button type="submit" class="submit-btn">Отправить</button>
-                </form>
-            `;
-            container.appendChild(card);
-        });
+                    <div class="question-footer">
+                        <button class="helpful-btn ${q.likes > 0 ? 'active' : ''}" onclick="toggleHelpful(this)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                            <span class="helpful-count">${q.likes}</span>
+                        </button>
+                        <button class="reply-btn" onclick="toggleReplyForm(this)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                <polyline points="16 8 12 12 8 8"></polyline>
+                            </svg>
+                            Ответить
+                        </button>
+                    </div>
 
-        // Обновляем счетчик вопросов
-        if (questionsCount) {
-            questionsCount.textContent = qnaData.length;
+                    <form class="reply-form" onsubmit="submitReply(event, this)">
+                        <input type="text" class="reply-author-input" placeholder="Ваше имя" style="width:100%; padding:8px 12px; margin-bottom:8px; border:1px solid #eaeaea; border-radius:8px; box-sizing:border-box;">
+                        <textarea placeholder="Напишите ваш ответ..." required></textarea>
+                        <button type="submit" class="submit-btn">Отправить</button>
+                    </form>
+                `;
+                container.appendChild(card);
+            });
+
+            if (questionsCount) questionsCount.textContent = qnaData.length;
         }
-    }
 
-    // ==========================================
-    // 7. ЗАПУСК
-    // ==========================================
-    loadQna(); // Загружаем данные и отрисовываем вопросы при старте
-});
-</script>
+        // ==========================================
+        // 7. СТАРТ
+        // ==========================================
+        renderQuestions();
+    });
+    </script>
+
+    <!-- ===== Синхронизация нового отзыва с объединённым рейтингом ===== -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const reviewForm = document.getElementById('reviewForm');
+        if (!reviewForm) return;
+
+        // capture:true — чтобы прочитать поля раньше, чем reviews.js их очистит
+        reviewForm.addEventListener('submit', () => {
+            const roseId = new URLSearchParams(location.search).get('id') || 'unknown';
+
+            const score  = Number(document.getElementById('reviewScore').value) || 0;
+            const text   = (document.getElementById('reviewText').value  || '').trim();
+            const author = (document.getElementById('reviewAuthor').value || 'Гость').trim();
+
+            // Синхронизируем только валидные отзывы (совпадает с проверкой в reviews.js)
+            if (score < 1 || text.length < 5) return;
+
+            if (window.RoseRatings && typeof RoseRatings.addUserReview === 'function') {
+                RoseRatings.addUserReview(roseId, {
+                    rating: score,
+                    text: text,
+                    author: author
+                });
+            }
+        }, true); // ← обязательно capture: true
+    });
+    </script>
+
 </body>
 </html>

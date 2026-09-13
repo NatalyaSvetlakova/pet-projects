@@ -2,6 +2,17 @@
    qna.js — вопросы и ответы, привязанные к конкретному сорту
    ========================================================= */
 
+/* =========================================================
+   qna.js — вопросы и ответы в localStorage
+   API:
+     getAllQna()                    — все данные
+     saveAllQna(data)               — сохранить всё
+     getQuestions(roseId)           — вопросы для сорта
+     addQuestion(roseId, text, author)
+     addReply(roseId, questionId, text, author)
+     updateQuestionLikes(roseId, questionId, count)
+   ========================================================= */
+
 const QNA_KEY = 'roses-catalog-qna';
 
 /**
@@ -51,7 +62,9 @@ function addQuestion(roseId, text, author) {
     id: Date.now(),                        // уникальный ID для каждого вопроса
     author: (author || 'Гость').trim(),
     text: text.trim(),
-    date: new Date().toISOString().slice(0, 10),
+    date: new Date().toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }),
     likes: 0,
     replies: []                            // массив ответов внутри вопроса
   });
@@ -76,7 +89,9 @@ function addReply(roseId, questionId, text, author) {
   question.replies.push({
     author: (author || 'Гость').trim(),
     text: text.trim(),
-    date: new Date().toISOString().slice(0, 10)
+    date: new Date().toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    })
   });
 
   saveAllQna(all);
