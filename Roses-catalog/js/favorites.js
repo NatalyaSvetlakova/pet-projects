@@ -103,10 +103,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('favoritesContainer');
   if (!container) return;
 
+  // === ОБЪЕДИНЁННЫЙ РЕЙТИНГ (как в каталоге и на главной) ===
+  function getMerged(rose) {
+    if (window.RoseRatings && RoseRatings.getMergedRating) {
+      return RoseRatings.getMergedRating(rose.id);
+    }
+    const arr = Array.isArray(rose.reviews) ? rose.reviews : [];
+    const sum = arr.reduce((s, r) => s + (Number(r.score) || 0), 0);
+    const avg = arr.length ? sum / arr.length : (parseFloat(rose.rating) || 0);
+    return { avg: Math.round(avg * 10) / 10, count: arr.length };
+  }
+
+  // === КОРРЕКТНЫЙ ПУТЬ К КАРТИНКЕ ===
+  function getImageSrc(rose) {
+    if (Array.isArray(rose.images) && rose.images.length > 0) {
+      const fileName = rose.images[0];
+      if (!fileName) return '';
+      return fileName.includes('/') ? fileName : `img/${fileName}`;
+    }
+    return '';
+  }
+
+  // === ПЛАВНЫЙ СЧЁТЧИК ЧИСЛА ===
+  function animateNumber(el, target) {
+    const dur = 800;
+    const t0 = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(1);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
   renderFavorites();
 
-  function renderFavorites() {
-    const favorites = getFavorites(); // массив ID из favorites.js
+   function renderFavorites() {
+    const favorites = getFavorites();
 
     container.innerHTML = '';
 
@@ -132,17 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const header = document.createElement('div');
     header.className = 'favorites-header';
-    header.innerHTML = `
-     
-      <span class="favorites-header__count">${count} ${word}</span>
-    `;
+    header.innerHTML = `<span class="favorites-header__count">${count} ${word}</span>`;
     container.appendChild(header);
 
-    // --- Сетка карточек ---
+    // --- Сетка карточек: те же классы, что в каталоге ---
     const grid = document.createElement('div');
-    grid.className = 'fav-grid';
+    grid.className = 'cards-grid';
 
-    // Находим полные данные сортов по ID
     const favRoses = favorites
       .map(id => roses.find(r => r.id === id))
       .filter(rose => rose !== undefined);
@@ -156,47 +186,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function createFavCard(rose) {
     const card = document.createElement('div');
-    card.className = 'fav-card';
+    card.className = 'card';              // ← класс из каталога
     card.dataset.id = rose.id;
 
+    const isFav = isInFavorites(rose.id);
+    const { avg: ratingNum, count: reviewsCount } = getMerged(rose);
+    const category = rose.categoryLabel || rose.category || 'Сорт';
+    const imageSrc = getImageSrc(rose);
+
     card.innerHTML = `
-      <a href="rose.html?id=${rose.id}" class="fav-card__link">
-        <div class="fav-card__image-wrap">
-          <span class="fav-card__badge">${rose.categoryLabel}</span>
-          <img class="fav-card__image" src="${rose.images[0]}" alt="${rose.name}" loading="lazy">
+      <a href="rose.html?id=${rose.id}" class="card__link">
+        <div class="card__image-wrap">
+          <img src="${imageSrc}" alt="${rose.name || 'Роза'}"
+               class="card__image" loading="lazy"
+               onerror="this.style.display='none'">
+          ${ratingNum > 0 ? `
+            <span class="card__badge" data-rating="${ratingNum}">
+              <span class="card__badge-star" aria-hidden="true">★</span>
+              <span class="card__badge-value">0.0</span>
+            </span>
+          ` : ''}
+        </div>
+        <div class="card__body">
+          <span class="card__category">${category}</span>
+          <h3 class="card__title">${rose.name || 'Без названия'}</h3>
+          ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
+          <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
+          <div class="card__footer">
+            <div class="stars-wrapper">
+              <span class="stars-visual" data-rating="${ratingNum}" style="--rating:0" aria-label="Рейтинг ${ratingNum} из 5"></span>
+              ${reviewsCount > 0 ? `<span class="rating-count">${reviewsCount}</span>` : ''}
+            </div>
+            <button class="card__fav-btn active" data-id="${rose.id}">
+              ❤️ В избранном
+            </button>
+          </div>
         </div>
       </a>
-      <div class="fav-card__body">
-        <a href="rose.html?id=${rose.id}" class="fav-card__link">
-          <h3 class="fav-card__title">${rose.name}</h3>
-          <p class="fav-card__latin">${rose.latinName || ''}</p>
-        </a>
-        <p class="fav-card__desc">${rose.description}</p>
-        <div class="fav-card__footer">
-          <span class="fav-card__rating">★ ${rose.rating}</span>
-          <button class="fav-card__remove" data-id="${rose.id}">
-            <span>✕</span> Удалить
-          </button>
-        </div>
-      </div>
     `;
 
-    // Обработчик удаления
-    const removeBtn = card.querySelector('.fav-card__remove');
-    removeBtn.addEventListener('click', (e) => {
+    // Анимация: цифра счётчиком, звёзды заливкой
+    const badge = card.querySelector('.card__badge[data-rating]');
+    if (badge) {
+      const valueEl = badge.querySelector('.card__badge-value');
+      if (valueEl) animateNumber(valueEl, parseFloat(badge.dataset.rating));
+    }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        card.querySelectorAll('.stars-visual[data-rating]').forEach(el => {
+          el.style.setProperty('--rating', el.dataset.rating);
+        });
+      });
+    });
+
+    // Клик по «В избранном» — удаляет с анимацией
+    const favBtn = card.querySelector('.card__fav-btn');
+    favBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      // Анимация удаления
       card.classList.add('fav-card--removing');
-
-      // Ждём завершения анимации, затем убираем из DOM и localStorage
       card.addEventListener('animationend', () => {
-        // Удаляем из localStorage через favorites.js
-        let favorites = getFavorites().filter(id => id !== rose.id);
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-
-        // Перерисовываем страницу
+        toggleFavorite(rose.id);   // функция сама удалит сорт из localStorage
         renderFavorites();
       }, { once: true });
     });

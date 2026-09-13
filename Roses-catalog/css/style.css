@@ -457,6 +457,11 @@ background: rgba(255,255,255,0.3) !important;
   object-fit: cover;
 }
 
+/* Бейдж должен прилипать к своей картинке, а не к странице */
+.card__image-wrap {
+  position: relative;
+}
+
 .card__body {
   padding: 18px;
 }
@@ -508,6 +513,16 @@ background: rgba(255,255,255,0.3) !important;
 .card__rating {
   color: var(--color-primary);
   font-weight: 600;
+}
+
+/* Анимация удаления карточки из избранного */
+.card.fav-card--removing {
+  animation: favCardRemove .4s ease forwards;
+  pointer-events: none;
+}
+@keyframes favCardRemove {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(.85) translateY(-10px); }
 }
 
 .card__fav-btn {
