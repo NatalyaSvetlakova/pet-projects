@@ -127,6 +127,15 @@ function getRatingSummary(rose) {
   return { total, avg, distribution };
 }
 
+// функция для правильного русского склонения (отзыв/отзывов)
+function pluralReviews(n) {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'отзыв';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'отзыва';
+  return 'отзывов';
+}
+
 /**
  * Обновляет блок рейтинга на странице отдельного сорта (rose.html).
  * Использует getReviews(rose) — то есть встроенные отзывы из data.js
@@ -153,9 +162,14 @@ function updateRoseRatingUI(rose) {
   });
 
   // 3. Текст "X / 5"
-  const avgTextEl = document.getElementById('reviewsAvgText');
+ const avgTextEl = document.getElementById('reviewsAvgText');
   if (avgTextEl) {
-    avgTextEl.textContent = total > 0 ? `${avg.toFixed(1)} / 5` : '0 / 5';
+    if (total > 0) {
+      const word = pluralReviews(total); // отзыв / отзыва / отзывов
+      avgTextEl.textContent = `${avg.toFixed(1)} из 5 • ${total} ${word}`;
+    } else {
+      avgTextEl.textContent = '0 / 5';
+    }
   }
 
   // 4. Визуальные звёзды (CSS-переменная --rating)
@@ -164,11 +178,12 @@ function updateRoseRatingUI(rose) {
     starsEl.style.setProperty('--rating', avg.toFixed(1));
   }
 
-  // 5. Полоски
+ // 5. Полоски — используем data-stars, чтобы не зависеть от порядка
   const rows = document.querySelectorAll('.rating-bar-row');
-  rows.forEach((row, index) => {
-    // Порядок строк в HTML: 5, 4, 3, 2, 1
-    const starValue = 5 - index;
+  rows.forEach(row => {
+    const starValue = parseInt(row.dataset.stars, 10);
+    if (isNaN(starValue)) return;
+
     const count = dist[starValue] || 0;
     const percent = total > 0 ? (count / total) * 100 : 0;
 
@@ -177,7 +192,5 @@ function updateRoseRatingUI(rose) {
 
     if (fillEl) fillEl.style.width = `${percent}%`;
     if (countEl) countEl.textContent = count;
-  });
-
-  console.log(`⭐ Рейтинг сорта "${rose.name}": ${avg.toFixed(1)} / 5 (${total} отзывов)`);
-}
+   }); // ← закрывает forEach
+}     // ← закрывает updateRoseRatingUI

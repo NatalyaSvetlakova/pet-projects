@@ -86,7 +86,12 @@ function addReply(roseId, questionId, text, author) {
   const question = all[roseId].find(q => q.id === questionId);
   if (!question) return;
 
+  // Уникальный id ответа — устойчив к удалению соседей
+  const replyId = 'r_' + Date.now().toString(36) + '_' +
+                  Math.random().toString(36).slice(2, 8);
+
   question.replies.push({
+    id: replyId,
     author: (author || 'Гость').trim(),
     text: text.trim(),
     date: new Date().toLocaleDateString('ru-RU', {
@@ -109,3 +114,32 @@ function updateQuestionLikes(roseId, questionId, newCount) {
     saveAllQna(all);
   }
 }
+/* =========================================================
+   Одноразовая миграция: проставляем id всем старым ответам.
+   Идемпотентно — если id уже есть, ничего не делает.
+   ========================================================= */
+(function ensureReplyIds() {
+  try {
+    const all = getAllQna();
+    let changed = false;
+
+    Object.values(all).forEach(list => {
+      (list || []).forEach(q => {
+        (q.replies || []).forEach(r => {
+          if (!r.id) {
+            r.id = 'r_' + Date.now().toString(36) + '_' +
+                   Math.random().toString(36).slice(2, 8);
+            changed = true;
+          }
+        });
+      });
+    });
+
+    if (changed) {
+      saveAllQna(all);
+      console.log('qna.js: проставлены id для старых ответов');
+    }
+  } catch (e) {
+    console.warn('qna.js: не удалось выполнить миграцию id ответов', e);
+  }
+})();

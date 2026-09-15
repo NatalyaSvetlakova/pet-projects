@@ -21,36 +21,36 @@ window.escapeHtml = function(s) {
     .replace(/'/g, '&#39;');
 };
 
-window.getHelpfulCount = function(roseId, reviewId) {
-  const key = `helpful_${roseId}_${reviewId}`;
-  const count = localStorage.getItem(key + '_count');
-  return count ? parseInt(count, 10) : 0;
-};
+// window.getHelpfulCount = function(roseId, reviewId) {
+//   const key = `helpful_${roseId}_${reviewId}`;
+//   const count = localStorage.getItem(key + '_count');
+//   return count ? parseInt(count, 10) : 0;
+// };
 
-window.isHelpfulVoted = function(roseId, reviewId) {
-  const key = `helpful_${roseId}_${reviewId}`;
-  return localStorage.getItem(key + '_voted') === 'true';
-};
+// window.isHelpfulVoted = function(roseId, reviewId) {
+//   const key = `helpful_${roseId}_${reviewId}`;
+//   return localStorage.getItem(key + '_voted') === 'true';
+// };
 
-window.toggleReviewHelpful = function(button, roseId, reviewId) {
-  const key = `helpful_${roseId}_${reviewId}`;
-  const countSpan = button.querySelector('.helpful-count');
-  let count = parseInt(countSpan.textContent, 10) || 0;
-  const isVoted = localStorage.getItem(key + '_voted') === 'true';
+// window.toggleReviewHelpful = function(button, roseId, reviewId) {
+//   const key = `helpful_${roseId}_${reviewId}`;
+//   const countSpan = button.querySelector('.helpful-count');
+//   let count = parseInt(countSpan.textContent, 10) || 0;
+//   const isVoted = localStorage.getItem(key + '_voted') === 'true';
 
-  if (isVoted) {
-    count = Math.max(0, count - 1);
-    button.classList.remove('active');
-    localStorage.setItem(key + '_voted', 'false');
-  } else {
-    count += 1;
-    button.classList.add('active');
-    localStorage.setItem(key + '_voted', 'true');
-  }
+//   if (isVoted) {
+//     count = Math.max(0, count - 1);
+//     button.classList.remove('active');
+//     localStorage.setItem(key + '_voted', 'false');
+//   } else {
+//     count += 1;
+//     button.classList.add('active');
+//     localStorage.setItem(key + '_voted', 'true');
+//   }
 
-  countSpan.textContent = count;
-  localStorage.setItem(key + '_count', count);
-};
+//   countSpan.textContent = count;
+//   localStorage.setItem(key + '_count', count);
+// };
 
 // ============================================
 // ОСНОВНАЯ ЛОГИКА СТРАНИЦЫ
@@ -211,20 +211,22 @@ function initReviews(rose) {
 
     const avg = getAverageRating(rose);
     
-    // === Обновляем счётчик в табе ===
+// === Обновляем счётчик в табе ===
     const countEl = document.getElementById('reviewsCount');
     if (countEl) countEl.textContent = reviews.length;
 
-    if (avgStarsEl) avgStarsEl.style.setProperty('--rating', avg);
-    if (avgTextEl) {
-      avgTextEl.textContent = reviews.length === 0
-        ? 'Пока нет оценок'
-        : `${avg} из 5 · ${reviews.length} ${plural(reviews.length)}`;
-    }
-
-    if (reviews.length === 0) {
-      listEl.innerHTML = `<li class="reviews-empty">Отзывов пока нет — станьте первым!</li>`;
-      return;
+    // Единая точка обновления рейтинга: текст, звёзды, полоски
+    if (typeof updateRoseRatingUI === 'function') {
+      updateRoseRatingUI(rose);
+    } else {
+      // Fallback, если reviews.js ещё не загрузился
+      const avg = getAverageRating(rose);
+      if (avgStarsEl) avgStarsEl.style.setProperty('--rating', avg);
+      if (avgTextEl) {
+        avgTextEl.textContent = reviews.length === 0
+          ? 'Пока нет оценок'
+          : `${avg} из 5 · ${reviews.length} ${plural(reviews.length)}`;
+      }
     }
 
     const sorted = [...reviews].sort(getComparator(currentSort));
@@ -236,10 +238,7 @@ function initReviews(rose) {
       
       // Используем индекс как надежный уникальный ключ
       const reviewId = reviews.indexOf(r); 
-      
-      const helpfulCount = getHelpfulCount(rose.id, reviewId);
-      const isHelpfulActive = isHelpfulVoted(rose.id, reviewId);
-
+            
       return `
         <li class="review${isUser ? ' review--user' : ''}">
           <div class="review__head">
@@ -251,16 +250,23 @@ function initReviews(rose) {
           </div>
           <p class="review__text">${escapeHtml(r.text || '')}</p>
           
-          <div class="review__footer">
-            <span class="review__helpful-label">Вам помог этот отзыв?</span>
-            <button type="button" 
-                    class="helpful-btn ${isHelpfulActive ? 'active' : ''}" 
-                    onclick="toggleReviewHelpful(this, '${rose.id}', ${reviewId})">
+          <div class="review__feedback" data-rose-id="${rose.id}" data-review-id="${reviewId}">
+            <button type="button" class="feedback-trigger" aria-label="Оценить ответ">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
               </svg>
-              Да <span class="helpful-count">${helpfulCount}</span>
+              Полезно?
             </button>
+            <div class="feedback-popup" role="menu">
+              <button type="button" class="feedback-popup__btn" data-vote="good">
+                <span>👍</span> Хороший ответ
+                <span class="feedback-popup__count" data-count="good">0</span>
+              </button>
+              <button type="button" class="feedback-popup__btn" data-vote="bad">
+                <span>👎</span> Плохой ответ
+                <span class="feedback-popup__count" data-count="bad">0</span>
+              </button>
+            </div>
           </div>
 
           ${isUser && origIndex >= 0 ? `
@@ -279,8 +285,40 @@ function initReviews(rose) {
         }
       });
     });
-  }
+     // === Обновление счётчиков у всплывающих окошек ===
+    listEl.querySelectorAll('.review__feedback').forEach(box => {
+      const roseId = box.dataset.roseId;
+      const reviewId = box.dataset.reviewId;
 
+      const state = getFeedbackState(roseId, reviewId);
+
+      box.querySelectorAll('.feedback-popup__btn').forEach(btn => {
+        const kind = btn.dataset.vote;
+
+        // Счётчик
+        const counter = btn.querySelector(`[data-count="${kind}"]`);
+        if (counter) counter.textContent = state[kind] || 0;
+
+        // Активное состояние
+        btn.classList.toggle('is-active', state.userVote === kind);
+
+        // Обработчик клика
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const next = setFeedbackVote(roseId, reviewId, kind);
+
+          box.querySelectorAll('.feedback-popup__btn').forEach(b => {
+            const k = b.dataset.vote;
+            b.classList.toggle('is-active', next.userVote === k);
+            const c = b.querySelector(`[data-count="${k}"]`);
+            if (c) c.textContent = next[k] || 0;
+          });
+        });
+      });
+    });
+
+  } // ← это закрывающая скобка функции renderReviews
+  
   function getComparator(sort) {
     switch (sort) {
       case 'date-asc':   return (a, b) => (a.date || '').localeCompare(b.date || '');
@@ -399,7 +437,7 @@ function initQuestions(rose) {
     return;
   }
 
-  // ============ Отрисовка списка ============
+ // ============ Отрисовка списка ============
   function renderQuestions() {
     const questions = getQuestions(rose.id);   // ← только для этого сорта
 
@@ -407,12 +445,53 @@ function initQuestions(rose) {
       listEl.innerHTML = '<p class="reviews-empty">Пока нет вопросов — задайте первый!</p>';
     } else {
       listEl.innerHTML = questions.map(q => {
-        const repliesHtml = (q.replies || []).map(r => `
-          <div class="reply-item">
-            <div class="reply-author">${escapeHtml(r.author)}</div>
-            <div class="reply-text">${escapeHtml(r.text)}</div>
-          </div>
-        `).join('');
+        const repliesHtml = (q.replies || []).map(r => {
+          // Уникальный ключ голосования
+          const replyId = r.id || `${r.author}_${(r.text || '').slice(0, 8)}`;
+          const feedbackKey = `reply_${replyId}`;
+
+          return `
+            <div class="reply-item" data-reply-id="${replyId}">
+              <div class="reply-author">${escapeHtml(r.author)}</div>
+              <div class="reply-text">${escapeHtml(r.text)}</div>
+
+              <div class="review__feedback" data-rose-id="${rose.id}" data-review-id="${feedbackKey}">
+                <button type="button" class="feedback-trigger" aria-label="Оценить ответ">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                  </svg>
+                  Полезно?
+                </button>
+                <div class="feedback-popup" role="menu">
+                  <button type="button" class="feedback-popup__btn" data-vote="good">
+                    <span>👍</span> Хороший ответ
+                    <span class="feedback-popup__count" data-count="good">0</span>
+                  </button>
+                  <button type="button" class="feedback-popup__btn" data-vote="bad">
+                    <span>👎</span> Плохой ответ
+                    <span class="feedback-popup__count" data-count="bad">0</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // === Кнопка «Полезно?» у вопроса (без накрутки) ===
+        const likeKey = `qhelpful_${rose.id}_${q.id}`;
+        const isLiked = localStorage.getItem(likeKey) === 'true';
+        const baseCount = q.likes || 0;
+        const displayCount = baseCount + (isLiked ? 1 : 0);
+
+        const likeButtonHtml = `
+          <button class="helpful-btn ${isLiked ? 'active' : ''}"
+                  onclick="handleQuestionLike(this, '${rose.id}', ${q.id})">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+            </svg>
+            <span class="helpful-count" data-base="${baseCount}">${displayCount}</span>
+          </button>
+        `;
 
         return `
           <div class="question-card" data-question-id="${q.id}">
@@ -430,12 +509,7 @@ function initQuestions(rose) {
             <div class="question-replies">${repliesHtml}</div>
 
             <div class="question-footer">
-              <button class="helpful-btn" onclick="handleQuestionLike(this, '${rose.id}', ${q.id})">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-                </svg>
-                <span class="helpful-count">${q.likes || 0}</span>
-              </button>
+              ${likeButtonHtml}
               <button class="reply-btn" onclick="toggleReplyForm(this)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
@@ -456,6 +530,35 @@ function initQuestions(rose) {
     }
 
     if (questionsCount) questionsCount.textContent = questions.length;
+
+    // === Обновление счётчиков у всплывающих окошек под ответами ===
+    listEl.querySelectorAll('.review__feedback').forEach(box => {
+      const roseId = box.dataset.roseId;
+      const reviewId = box.dataset.reviewId;
+
+      const state = getFeedbackState(roseId, reviewId);
+
+      box.querySelectorAll('.feedback-popup__btn').forEach(btn => {
+        const kind = btn.dataset.vote;
+
+        const counter = btn.querySelector(`[data-count="${kind}"]`);
+        if (counter) counter.textContent = state[kind] || 0;
+
+        btn.classList.toggle('is-active', state.userVote === kind);
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const next = setFeedbackVote(roseId, reviewId, kind);
+
+          box.querySelectorAll('.feedback-popup__btn').forEach(b => {
+            const k = b.dataset.vote;
+            b.classList.toggle('is-active', next.userVote === k);
+            const c = b.querySelector(`[data-count="${k}"]`);
+            if (c) c.textContent = next[k] || 0;
+          });
+        });
+      });
+    });
   }
 
   // ============ Отправка нового вопроса ============
@@ -482,15 +585,20 @@ function initQuestions(rose) {
 // (вызываются через onclick из HTML)
 // ============================================
 
-// Клик по «Полезно» у вопроса
-window.handleQuestionLike = function(button, roseId, questionId) {
+// Клик по «Полезно» у вопроса (без накрутки)
+window.handleQuestionLike = function (button, roseId, questionId) {
+  const key = `qhelpful_${roseId}_${questionId}`;
+  const isLiked = localStorage.getItem(key) === 'true';
   const countSpan = button.querySelector('.helpful-count');
-  let count = parseInt(countSpan.textContent, 10) || 0;
-  count += 1;
-  countSpan.textContent = count;
-  if (typeof updateQuestionLikes === 'function') {
-    updateQuestionLikes(roseId, questionId, count);
-  }
+  const baseCount = parseInt(countSpan.dataset.base, 10) || 0;
+
+  // Переключаем только флаг пользователя (0 или 1)
+  const nextLiked = !isLiked;
+  localStorage.setItem(key, nextLiked ? 'true' : 'false');
+
+  // Отображаем: базовое число + вклад пользователя
+  countSpan.textContent = baseCount + (nextLiked ? 1 : 0);
+  button.classList.toggle('active', nextLiked);
 };
 
 // Открытие/закрытие формы ответа под конкретным вопросом
@@ -528,6 +636,39 @@ window.handleReplySubmit = function(event, form, roseId, questionId) {
     if (rose && typeof initQuestions === 'function') initQuestions(rose);
   }
 };
+
+/* ==== Хранилище голосов «Хороший / Плохой ответ» ==== */
+function getFeedbackState(roseId, reviewId) {
+  const base = `feedback_${roseId}_${reviewId}`;
+  return {
+    good: parseInt(localStorage.getItem(base + '_good') || '0', 10),
+    bad:  parseInt(localStorage.getItem(base + '_bad')  || '0', 10),
+    userVote: localStorage.getItem(base + '_user') || null
+  };
+}
+
+function setFeedbackVote(roseId, reviewId, choice) {
+  const base = `feedback_${roseId}_${reviewId}`;
+  const state = getFeedbackState(roseId, reviewId);
+
+  // Если кликнули по тому же варианту — снимаем голос
+  if (state.userVote === choice) {
+    state[choice] = Math.max(0, state[choice] - 1);
+    state.userVote = null;
+  } else {
+    // Убираем прошлый голос
+    if (state.userVote) state[state.userVote] = Math.max(0, state[state.userVote] - 1);
+    state[choice] = (state[choice] || 0) + 1;
+    state.userVote = choice;
+  }
+
+  localStorage.setItem(base + '_good', state.good);
+  localStorage.setItem(base + '_bad',  state.bad);
+  if (state.userVote) localStorage.setItem(base + '_user', state.userVote);
+  else localStorage.removeItem(base + '_user');
+
+  return state;
+}
 
 // // ============================================
 // // ROSE.JS — ЛОГИКА СТРАНИЦЫ СОРТА
