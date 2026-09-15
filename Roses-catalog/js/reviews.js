@@ -98,3 +98,86 @@ function getAverageRating(rose) {
   const sum = reviews.reduce((acc, r) => acc + (Number(r.score) || 0), 0);
   return +(sum / reviews.length).toFixed(1);
 }
+
+/**
+ * Возвращает объект с полной статистикой рейтинга
+ * @param {Object} rose - объект сорта из data.js
+ * @returns {{ total: number, avg: number, distribution: Object }}
+ */
+function getRatingSummary(rose) {
+  const reviews = getReviews(rose); // Берем объединенные отзывы (пользовательские + встроенные)
+  const total = reviews.length;
+  
+  // Инициализируем счетчики для 5, 4, 3, 2, 1 звезды
+  const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  let sum = 0;
+
+  reviews.forEach(r => {
+    // Округляем оценку до целого и проверяем, что она в диапазоне 1-5
+    const score = Math.round(Number(r.score) || 0);
+    if (score >= 1 && score <= 5) {
+      distribution[score]++;
+      sum += score;
+    }
+  });
+
+  // Считаем средний балл (если отзывов нет, возвращаем 0)
+  const avg = total > 0 ? (sum / total).toFixed(1) : 0;
+
+  return { total, avg, distribution };
+}
+
+/**
+ * Обновляет блок рейтинга на странице отдельного сорта (rose.html).
+ * Использует getReviews(rose) — то есть встроенные отзывы из data.js
+ * ПЛЮС пользовательские отзывы из localStorage. Расчёт полностью
+ * совпадает с тем, что использует каталог.
+ *
+ * @param {Object} rose - объект сорта из data.js
+ */
+function updateRoseRatingUI(rose) {
+  if (!rose) return;
+
+  const reviews = getReviews(rose);       // ← единый источник правды
+  const total = reviews.length;
+
+  // 1. Средний балл
+  const sum = reviews.reduce((s, r) => s + (Number(r.score) || 0), 0);
+  const avg = total > 0 ? (sum / total) : 0;
+
+  // 2. Распределение по звёздам
+  const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  reviews.forEach(r => {
+    const score = Math.round(Number(r.score) || 0);
+    if (dist[score] !== undefined) dist[score]++;
+  });
+
+  // 3. Текст "X / 5"
+  const avgTextEl = document.getElementById('reviewsAvgText');
+  if (avgTextEl) {
+    avgTextEl.textContent = total > 0 ? `${avg.toFixed(1)} / 5` : '0 / 5';
+  }
+
+  // 4. Визуальные звёзды (CSS-переменная --rating)
+  const starsEl = document.getElementById('reviewsAvgStars');
+  if (starsEl) {
+    starsEl.style.setProperty('--rating', avg.toFixed(1));
+  }
+
+  // 5. Полоски
+  const rows = document.querySelectorAll('.rating-bar-row');
+  rows.forEach((row, index) => {
+    // Порядок строк в HTML: 5, 4, 3, 2, 1
+    const starValue = 5 - index;
+    const count = dist[starValue] || 0;
+    const percent = total > 0 ? (count / total) * 100 : 0;
+
+    const fillEl = row.querySelector('.bar-fill');
+    const countEl = row.querySelector('.bar-count');
+
+    if (fillEl) fillEl.style.width = `${percent}%`;
+    if (countEl) countEl.textContent = count;
+  });
+
+  console.log(`⭐ Рейтинг сорта "${rose.name}": ${avg.toFixed(1)} / 5 (${total} отзывов)`);
+}

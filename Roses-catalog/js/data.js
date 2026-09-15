@@ -4,12 +4,16 @@
 
 const categories = [
   { value: 'all', label: 'Все' },
+  { value: 'floribunda', label: 'Флорибунда' }, 
+  { value: 'grandiflora', label: 'Грандифлора' },
   { value: 'hybrid_tea', label: 'Чайно‑гибридные' },
-  { value: 'floribunda', label: 'Флорибунда' },
-  { value: 'shrub', label: 'Шрабы' },
   { value: 'climbing', label: 'Плетистые' },
-  { value: 'miniature', label: 'Миниатюрные' },
-  { value: 'ground_cover', label: 'Почвопокровные' }
+  { value: 'miniature', label: 'Миниатюрные' }, 
+  { value: 'shrub', label: 'Шрабы' },
+  { value: 'ground_cover', label: 'Почвопокровные' },
+  { value: 'polyantha', label: 'Полиантовые' },
+  { value: 'hybrid perpetual', label: 'Ремонтантные' },
+  { value: 'park roses', label: 'Парковые' }
 ];
 
 const roses = [
@@ -1133,8 +1137,8 @@ const roses = [
   id: 'cherry-parfait',
   name: 'Черри Парфе',
   latinName: 'Cherry Parfait',
-  category: 'hybrid_tea',
-  categoryLabel: 'Чайно‑гибридные',
+  category: 'grandiflora',
+  categoryLabel: 'Грандифлора',
   color: 'Двухцветный (биколор) — кремово-белый с ярко-вишневой или малиновой каймой.',
   height: '70–100 см',
   flowerSize: '9–11 см',

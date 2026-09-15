@@ -1141,30 +1141,49 @@
                         <p class="rating-desc">Рейтинг формируется на основе актуальных отзывов</p>
                         
                         <div class="rating-bars">
-                            <div class="rating-bar-row">
+                            <!-- 5 звёзд -->
+                            <div class="rating-bar-row" data-stars="5">
                                 <span>5 звёзд</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 98%;"></div></div>
-                                <span class="bar-count">3323</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 0%;"></div>
+                                </div>
+                                <span class="bar-count">0</span>
                             </div>
-                            <div class="rating-bar-row">
+                            
+                            <!-- 4 звезды -->
+                            <div class="rating-bar-row" data-stars="4">
                                 <span>4 звезды</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 2%;"></div></div>
-                                <span class="bar-count">79</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 0%;"></div>
+                                </div>
+                                <span class="bar-count">0</span>
                             </div>
-                            <div class="rating-bar-row">
+                            
+                            <!-- 3 звезды -->
+                            <div class="rating-bar-row" data-stars="3">
                                 <span>3 звезды</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 0.1%;"></div></div>
-                                <span class="bar-count">3</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 0%;"></div>
+                                </div>
+                                <span class="bar-count">0</span>
                             </div>
-                            <div class="rating-bar-row">
+                            
+                            <!-- 2 звезды -->
+                            <div class="rating-bar-row" data-stars="2">
                                 <span>2 звезды</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 0.1%;"></div></div>
-                                <span class="bar-count">1</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 0%;"></div>
+                                </div>
+                                <span class="bar-count">0</span>
                             </div>
-                            <div class="rating-bar-row">
+                            
+                            <!-- 1 звезда -->
+                            <div class="rating-bar-row" data-stars="1">
                                 <span>1 звезда</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 0.1%;"></div></div>
-                                <span class="bar-count">2</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 0%;"></div>
+                                </div>
+                                <span class="bar-count">0</span>
                             </div>
                         </div>
                         <p class="rating-note">Отзывы могут оставлять все желающие. Так мы формируем честный рейтинг</p>
@@ -1179,7 +1198,7 @@
                     <div class="questions-list-col">
                         <div class="ask-form-card">
                             <h3>Задайте вопрос</h3>
-                            <p>Вам ответит представитель питомника или пользователь, купивший этот товар.</p>
+                            <p>Вам ответит оператор поддержки или посетитель сайта, который выращивает розы на своем участке.</p>
                             <form id="questionForm" action="javascript:void(0);">
                                 <div class="input-group">
                                     <input type="text" id="questionAuthor" placeholder="Ваше имя" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #eaeaea; border-radius:8px; box-sizing:border-box;">
@@ -1417,6 +1436,23 @@
         }, true); // ← обязательно capture: true
     });
     </script>
+    <!-- ===== Пересчёт рейтинга на странице сорта ===== -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const roseId = new URLSearchParams(location.search).get('id');
+    if (!roseId || typeof roses === 'undefined') return;
 
+    const currentRose = roses.find(r => r.id === roseId);
+    if (!currentRose) return;
+
+    // Небольшая задержка: даём rose.js сначала отрисовать страницу,
+    // чтобы он не перезаписал наши значения своими.
+    setTimeout(() => {
+        if (typeof updateRoseRatingUI === 'function') {
+        updateRoseRatingUI(currentRose);
+        }
+    }, 100);
+    });
+    </script>
 </body>
 </html>
