@@ -24,7 +24,7 @@
   }
 
   // === Собираем все пользовательские отзывы в один плоский массив ===
-   const allReviews = getAllUserReviews();  // { roseId: [review, …] }
+   const allReviews = getAllUserReviews();
 
   const flat = [];
   for (const roseId in allReviews) {
@@ -53,15 +53,36 @@
     return;
   }
 
-  // === Сортируем по дате (новые сверху) ===
-  flat.sort((a, b) => (b.review.date || '').localeCompare(a.review.date || ''));
+  // === 1. Отсеиваем мусорные и «будущие» даты ===
+  const now = Date.now();
+  const MS_DAY = 86400000;
+  const clean = flat.filter(({ review }) => {
+    const t = new Date(review.date || '').getTime();
+    if (isNaN(t)) return false;
+    if (t > now + MS_DAY) return false;
+    return true;
+  });
 
-  // === Берём последние 3 ===
-  const latest = flat.slice(0, 3);
+  // === 2. Сортировка: пользовательские — выше, потом по дате ===
+  clean.sort((a, b) => {
+    const ua = a.review.userAdded ? 1 : 0;
+    const ub = b.review.userAdded ? 1 : 0;
+    if (ua !== ub) return ub - ua;
+
+    const ta = new Date(a.review.date).getTime();
+    const tb = new Date(b.review.date).getTime();
+    return tb - ta;
+  });
+
+  // === 3. Лимит: 6 на десктопе, 3 на мобильном ===
+  const isMobile = window.innerWidth < 700;
+  const LIMIT = isMobile ? 3 : 6;
+  const latest = clean.slice(0, LIMIT);
 
   // === Рендер ===
   container.innerHTML = latest.map(renderItem).join('');
-  console.log(`✅ home-reviews.js: показано ${latest.length} отзывов`);
+  console.log(`✅ home-reviews.js: показано ${latest.length} отзывов (из ${clean.length} после фильтра)`);
+
 
   /* ============ ВСПОМОГАТЕЛЬНЫЕ ============ */
 
@@ -78,7 +99,10 @@
             : `<div class="latest-review__thumb-empty">🌹</div>`}
         </div>
         <div class="latest-review__body">
-          <div class="latest-review__rose">${escapeHtml(rose.name)}</div>
+          <div class="latest-review__head">
+            <div class="latest-review__rose">${escapeHtml(rose.name)}</div>
+            <span class="latest-review__score">${score.toFixed(1)}</span>
+          </div>
           <div class="latest-review__stars">
             <span class="stars-visual" style="--rating: ${score}"></span>
           </div>

@@ -14,6 +14,23 @@
   box-sizing: border-box;
 }
 
+/* Плавный скролл + красивые скроллбары */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #d8c8cd transparent;
+}
+html::-webkit-scrollbar { width: 10px; }
+html::-webkit-scrollbar-track { background: transparent; }
+html::-webkit-scrollbar-thumb {
+  background: #e0d0d5;
+  border-radius: 10px;
+  border: 3px solid var(--color-bg);
+}
+html::-webkit-scrollbar-thumb:hover {
+  background: #b72e4a;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -250,11 +267,14 @@ ul { list-style: none; padding: 0; margin: 0; }
   padding: 0;        /*← убираем лишние отступы */
 }
 
+html {
+  scroll-behavior: smooth;
+}
 
 /* ===== СЕТКА КАРТОЧЕК ===== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
   margin: 0;         /* ← убираем лишние отступы */
 }
@@ -728,34 +748,157 @@ background: rgba(255,255,255,0.3) !important;
 /* --- Основная капля --- */
 .color-swatch__dot {
   position: relative;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
 
-   /* Настоящая обводка — ровная на любом экране */
-  border: 1px solid #e0d2c8;
-  box-sizing: border-box;         /* ← обязательно, чтобы размер не «поехал» */
-
-  /* Многослойная заливка: блик сверху, основа, тень снизу */
+  /* Заливка: чёткий блик + объёмная основа */
   background:
-    radial-gradient(circle at 32% 26%,
+    /* Один яркий блик сверху — как отражение окна на камне */
+    radial-gradient(circle at 32% 22%,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.85) 5%,
+      rgba(255, 255, 255, 0) 18%),
+    /* Основной объём — без тёмных краёв */
+    radial-gradient(circle at 38% 32%,
       var(--c-lt) 0%,
-      var(--c) 42%,
-      var(--c-dk) 100%);
+      var(--c) 55%,
+      var(--c-dk) 120%);
 
-  /* Многослойная тень: внутренняя глубина + внешняя тень + тонкий блик */
+  /* Слои — от внутреннего к внешнему, БЕЗ размытия наружу */
   box-shadow:
-    inset 0 -3px 6px rgba(0, 0, 0, 0.28),
-    inset 0 3px 5px rgba(255, 255, 255, 0.55),
-    inset -2px -2px 4px rgba(0, 0, 0, 0.12),
-    /* 0 0 0 1.5px #e0d2c8,             ← НОВАЯ ОБВОДКА (как у белого) */
-    0 4px 8px rgba(0, 0, 0, 0.15),
-    0 1px 2px rgba(0, 0, 0, 0.12);
+    /* Внутри: световая кромка сверху */
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    /* Внутри: тёмная кромка снизу (объём) */
+    inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+    /* Внутри: тонкий светлый ободок */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    
+    /* СНАРУЖИ — только чёткие кольца, 0 blur */
+    0 0 0 1px rgba(255, 255, 255, 0.95),      /* яркая белая кромка */
+    0 0 0 2.5px rgba(180, 155, 140, 0.15),    /* тонкое тёплое определение */
+    0 2px 5px rgba(0, 0, 0, 0.14);            /* компактная тень */
 
   transition:
     transform .35s cubic-bezier(.34, 1.56, .64, 1),
     box-shadow .3s ease;
   will-change: transform;
+   z-index: 1;                    /* ← добавили: кружок поверх нимба */
+}
+/* ============================================================
+   ЦВЕТОЧНЫЙ НИМБ ВОКРУГ ВЫБРАННОЙ МЕТКИ
+   ============================================================ */
+
+/* ============================================================
+   ЦВЕТОЧНЫЙ НИМБ ВОКРУГ ВЫБРАННОЙ МЕТКИ (8 лепестков)
+   ============================================================ */
+
+.color-swatch::before {
+  content: '';
+  position: absolute;
+
+  /* Центр совпадает с центром кружка 32px */
+  top: 16px;
+  left: 50%;
+
+  width: 52px;
+  height: 52px;
+
+  /* Стартовое состояние: маленький, повёрнутый, невидимый */
+  transform: translate(-50%, -50%) scale(0.35) rotate(-40deg);
+  opacity: 0;
+
+  /* Цвет «листвы» */
+  background: linear-gradient(135deg, #3d5f48 0%, #4f7a5e 100%);
+  filter:
+    drop-shadow(0 0 0.5px #2c4435)               /* тёмный контур по лепесткам */
+    drop-shadow(0 2px 4px rgba(79, 122, 94, 0.35));
+
+  /* SVG-маска: 8 лепестков */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23fff'%3E%3Ccircle cx='50' cy='23' r='13'/%3E%3Ccircle cx='69' cy='31' r='13'/%3E%3Ccircle cx='77' cy='50' r='13'/%3E%3Ccircle cx='69' cy='69' r='13'/%3E%3Ccircle cx='50' cy='77' r='13'/%3E%3Ccircle cx='31' cy='69' r='13'/%3E%3Ccircle cx='23' cy='50' r='13'/%3E%3Ccircle cx='31' cy='31' r='13'/%3E%3C/g%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23fff'%3E%3Ccircle cx='50' cy='23' r='13'/%3E%3Ccircle cx='69' cy='31' r='13'/%3E%3Ccircle cx='77' cy='50' r='13'/%3E%3Ccircle cx='69' cy='69' r='13'/%3E%3Ccircle cx='50' cy='77' r='13'/%3E%3Ccircle cx='31' cy='69' r='13'/%3E%3Ccircle cx='23' cy='50' r='13'/%3E%3Ccircle cx='31' cy='31' r='13'/%3E%3C/g%3E%3C/svg%3E");
+
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+
+  transition:
+    opacity .3s ease,
+    transform .55s cubic-bezier(.34, 1.56, .64, 1);
+
+  pointer-events: none;
+  z-index: 0;
+  filter: drop-shadow(0 2px 4px rgba(216, 243, 225, 0.25));
+}
+
+/* ---------- HOVER: мягкое появление ---------- */
+.color-swatch:hover::before {
+  opacity: 0.55;
+  transform: translate(-50%, -50%) scale(0.82) rotate(-15deg);
+  transition:
+    opacity .35s ease,
+    transform .5s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* Плавное «дыхание» цветка при долгом наведении */
+.color-swatch:hover::before {
+  animation: flowerBreath 2.2s ease-in-out infinite;
+}
+
+@keyframes flowerBreath {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.82) rotate(-15deg); }
+  50%      { transform: translate(-50%, -50%) scale(0.9)  rotate(-10deg); }
+}
+
+/* ---------- HOVER у выбранной метки: цветок остаётся, но чуть пульсирует ---------- */
+.color-swatch:has(input:checked):hover::before {
+  opacity: 1;
+  animation: flowerPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes flowerPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  50%      { transform: translate(-50%, -50%) scale(1.08) rotate(4deg); }
+}
+
+/* ---------- CHECKED: полное раскрытие ---------- */
+.color-swatch:has(input:checked)::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  animation: flowerBloom .55s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+@keyframes flowerBloom {
+  0%   { transform: translate(-50%, -50%) scale(0.35) rotate(-40deg); opacity: 0; }
+  50%  { opacity: 1; }
+  70%  { transform: translate(-50%, -50%) scale(1.12) rotate(8deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+}
+
+/* Раскрываем при выборе */
+.color-swatch:has(input:checked)::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  animation: flowerBloom .55s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+/* Полупрозрачный намёк при наведении */
+.color-swatch:hover::before {
+  opacity: 0.3;
+  transform: translate(-50%, -50%) scale(0.85) rotate(-10deg);
+}
+
+/* Анимация раскрытия */
+@keyframes flowerBloom {
+  0%   { transform: translate(-50%, -50%) scale(0.35) rotate(-40deg); opacity: 0; }
+  50%  { opacity: 1; }
+  70%  { transform: translate(-50%, -50%) scale(1.12) rotate(8deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
 }
 
 /* Тонкий блик-точка — как у настоящего глянцевого камня */
@@ -775,72 +918,60 @@ background: rgba(255,255,255,0.3) !important;
   pointer-events: none;
 }
 
-/* Обводка для белого — чтобы не сливался с фоном */
-.color-swatch__dot--white {
-  border-color: #cfc0b3;          /* чуть темнее базового — чтобы белый читался */
-  box-shadow:
-    inset 0 -3px 6px rgba(180, 160, 150, 0.18),
-    inset 0 3px 5px rgba(255, 255, 255, 1),
-    0 4px 8px rgba(0, 0, 0, 0.1),
-    /* 0 0 0 1.5px #e0d2c8,               тёплая бежевая обводка */
-    0 1px 2px rgba(0, 0, 0, 0.08);
-}
-.color-swatch__dot--white:hover {
-  box-shadow:
-    inset 0 -3px 6px rgba(180, 160, 150, 0.2),
-    inset 0 3px 5px rgba(255, 255, 255, 1),
-    0 8px 16px rgba(0, 0, 0, 0.12),
-    0 4px 10px rgba(212, 181, 168, 0.5),
-    0 0 0 2px #fff,
-    0 0 0 3px #d4b5a8;
-}
-/* Активный белый свотч — тёплое бежевое кольцо */
-.color-swatch[title="Белый"] input:checked + .color-swatch__dot {
-  box-shadow:
-    inset 0 -3px 6px rgba(0, 0, 0, 0.1),
-    inset 0 3px 5px rgba(255, 255, 255, 1),
-    0 0 0 2px #fff,
-    0 0 0 4px #d4b5a8,              /* тёплый бежевый */
-    0 8px 20px rgba(212, 181, 168, 0.55);
-}
+
+
+
 
 /* ============================================================
    ДВУХЦВЕТНЫЙ СВОТЧ — диагональный сплит 50/50
    ============================================================ */
 
 .color-swatch__dot--bicolor {
-  /* Двухцветная заливка через linear-gradient 135° */
+  /* Два перекрывающихся радиальных «облака» + блик + глубина */
   background:
-    /* Блик сверху — сохраняет 3D-эффект */
-    radial-gradient(circle at 32% 26%,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.15) 25%,
-      rgba(255, 255, 255, 0) 45%),
-    /* Второй цвет — нижне-правая половина */
-    linear-gradient(135deg,
-      transparent 0%,
-      transparent 49%,
-      var(--c2) 50%,
-      var(--c2) 100%),
-    /* Первый цвет — верхне-левая половина + глубина */
-    radial-gradient(circle at 32% 26%,
+    /* 1. Верхний блик — маленький, яркий, как звезда */
+     radial-gradient(circle at 32% 22%,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.85) 5%,
+      rgba(255, 255, 255, 0) 18%),
+
+    /* 2. Облако первого цвета — сверху-слева */
+    radial-gradient(circle at 25% 25%,
       var(--c1-lt) 0%,
-      var(--c1) 45%,
+      var(--c1) 35%,
+      transparent 60%),
+
+    /* 3. Облако второго цвета — снизу-справа */
+    radial-gradient(circle at 78% 80%,
+      var(--c2) 0%,
+      var(--c2) 45%,              /* ← ядро второго цвета стало крупнее */
+      var(--c1) 86%),             /* ← плавно уходит в c1, без грязи */
+
+    /* 4. Тёмная подложка — глубина космоса */
+    radial-gradient(circle at 50% 50%,
+      var(--c1-dk) 0%,
       var(--c1-dk) 100%);
 
-  /* Тени — те же, что у одноцветных, для единообразия */
+  /* Объём: внутренние тени + внешнее свечение */
   box-shadow:
-    inset 0 -3px 6px rgba(0, 0, 0, 0.28),
-    inset 0 3px 5px rgba(255, 255, 255, 0.35),
-    0 4px 8px rgba(0, 0, 0, 0.15),
-    0 1px 2px rgba(0, 0, 0, 0.12);
+    /* Внутри: световая кромка сверху */
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    /* Внутри: тёмная кромка снизу (объём) */
+    inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+    /* Внутри: тонкий светлый ободок */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    
+    /* СНАРУЖИ — только чёткие кольца, 0 blur */
+    0 0 0 1px rgba(255, 255, 255, 0.95),      /* яркая белая кромка */
+    0 0 0 2.5px rgba(180, 155, 140, 0.15),    /* тонкое тёплое определение */
+    0 2px 5px rgba(0, 0, 0, 0.14);            /* компактная тень */
 }
 
 /* Если второй цвет — белый (или очень светлый), добавляем лёгкую обводку второй половины */
 .color-swatch[title="Бордовый / белый"] .color-swatch__dot--bicolor,
 .color-swatch[title="Красный / белый"] .color-swatch__dot--bicolor,
 .color-swatch[title="Белый / розовый"] .color-swatch__dot--bicolor {
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-color: #cfc0b3; /* Тёплый бежевый цвет */
   
 }
 
@@ -848,21 +979,30 @@ background: rgba(255,255,255,0.3) !important;
 .color-swatch:hover .color-swatch__dot--bicolor {
   transform: translateY(-3px) scale(1.12);
   box-shadow:
-     inset 0 -3px 6px rgba(0, 0, 0, 0.28),
-    inset 0 3px 5px rgba(255, 255, 255, 0.35),
-    0 4px 8px rgba(0, 0, 0, 0.15),
-    0 1px 2px rgba(0, 0, 0, 0.12);
+    inset 0 -4px 8px rgba(0, 0, 0, 0.35),
+    inset 0 3px 6px rgba(255, 255, 255, 0.5),
+    0 0 0 1px #cfc0b3,
+    0 8px 20px rgba(0, 0, 0, 0.2),
+    0 0 28px var(--glow),               /* ← ореол разгорается */
+    0 0 48px var(--glow);               /* ← и ещё раз, для глубины */
 }
 
-/* Активный двухцветный — цветное кольцо первого цвета */
-.color-swatch input:checked + .color-swatch__dot--bicolor {
-  transform: scale(1.08);
-  box-shadow:
-    inset 0 -3px 6px rgba(0, 0, 0, 0.28),
-    inset 0 3px 5px rgba(255, 255, 255, 0.4),
-    0 0 0 2px #fff,
-    0 0 0 4px var(--c1),
-    0 8px 20px var(--glow);
+/*  Дополнительные штрихи для «космоса» Блик-звезда */
+.color-swatch__dot--bicolor::before {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 18%;
+  width: 34%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 40%,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.6) 30%,
+      rgba(255, 255, 255, 0) 70%);
+  filter: blur(0.4px);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Галочка — с усиленной тенью, чтобы читалась на любом фоне */
@@ -872,26 +1012,20 @@ background: rgba(255,255,255,0.3) !important;
 
 /* --- Наведение: свечение в цвет свотча + парение --- */
 .color-swatch:hover .color-swatch__dot {
-   transform: translateY(-3px) scale(1.12);
+  transform: translateY(-3px) scale(1.08);
   box-shadow:
-    inset 0 -3px 6px rgba(0, 0, 0, 0.28),
-    inset 0 3px 5px rgba(255, 255, 255, 0.6),
-    0 8px 16px rgba(0, 0, 0, 0.18),
-    0 4px 10px var(--glow);
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.95),
+    0 0 0 2.5px rgba(79, 122, 94, 0.28),          /* ← зелёный, но полупрозрачный */
+    0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 
 
 /* --- Активное состояние --- */
-.color-swatch input:checked + .color-swatch__dot {
-  transform: scale(1.08);
-  box-shadow:
-    inset 0 -3px 6px rgba(0, 0, 0, 0.28),
-    inset 0 3px 5px rgba(255, 255, 255, 0.6),
-    0 0 0 2px #fff,               /* белое кольцо */
-    /* 0 0 0 4px var(--c),           цветное кольцо в цвет свотча */
-    0 8px 20px var(--glow);       /* внешнее свечение */
-}
+
 
 /* Галочка внутри активного */
 .color-swatch input:checked + .color-swatch__dot::after {
@@ -917,10 +1051,15 @@ background: rgba(255,255,255,0.3) !important;
 
 /* Тёмная галочка для светлых свотчей */
 .color-swatch__dot--white ~ * input:checked ~ .color-swatch__dot::after,
-.color-swatch[title="Желтый"] input:checked + .color-swatch__dot::after,
+/* Жёлтый кружок — БЕЛАЯ галочка */
+.color-swatch[title="Желтый"] input:checked + .color-swatch__dot::after {
+  border-color: #ffffff;                                  /* чисто белая */
+  filter: drop-shadow(0 1px 2px rgba(140, 90, 0, 0.45));  /* тёплая тень для контраста на жёлтом */
+}
+/*  Белый кружок — БЕЖЕВАЯ галочка под цвет обводки */
 .color-swatch[title="Белый"] input:checked + .color-swatch__dot::after {
-  border-color: #333;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.6));
+  border-color: #cfc0b3;                                  /* тёплый бежевый = цвет обводки */
+  filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.9)); /* лёгкий белый ореол для читаемости */
 }
 
 /* --- Подпись --- */
@@ -1179,13 +1318,27 @@ background: rgba(255,255,255,0.3) !important;
 
 /* --- ВЕРХНЯЯ ПАНЕЛЬ: ПОИСК + СОРТИРОВКА --- */
 .catalog__controls {
-  display: flex;
+    display: flex;
   gap: 12px;
   align-items: center;
   margin-bottom: 16px;
+  position: sticky;
+  top: 8px;
+  z-index: 50;
+  background: var(--color-bg);
+  padding: 8px 0;
+  border-radius: 10px;
+  transition: box-shadow .2s ease, background .2s ease, padding .2s ease;
 }
-.catalog__controls .search-box { flex: 1; min-width: 0; }
-.catalog__controls .sort-select { flex-shrink: 0; width: 200px; }
+
+/* Усиливаем тень, когда панель прилипла */
+.catalog__controls.is-stuck {
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 10px 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+}
 
 /* --- МОБИЛЬНАЯ КНОПКА «ФИЛЬТРЫ» --- */
 .mobile-filter-toggle {
@@ -1255,6 +1408,100 @@ background: rgba(255,255,255,0.3) !important;
   color: var(--color-text-muted);
   margin-bottom: 20px;
 }
+
+/* ============ КНОПКА «НАВЕРХ» ============ */
+.scroll-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 900;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #b72e4a;
+  border: 1px solid rgba(183, 46, 74, 0.15);
+  box-shadow:
+    0 4px 14px rgba(183, 46, 74, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(20px) scale(0.85);
+  opacity: 0;
+  transition:
+    transform .3s cubic-bezier(.34, 1.56, .64, 1),
+    opacity .25s ease,
+    box-shadow .25s ease,
+    background .25s ease,
+    color .25s ease;
+  pointer-events: none;
+}
+.scroll-top[hidden] { display: none; }
+.scroll-top.is-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+.scroll-top:hover {
+  background: #b72e4a;
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow:
+    0 8px 22px rgba(183, 46, 74, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.scroll-top:active { transform: translateY(0) scale(0.98); }
+.scroll-top:focus-visible {
+  outline: 2px solid #b72e4a;
+  outline-offset: 3px;
+}
+
+/* ============ КНОПКА «К ФИЛЬТРАМ» ============ */
+.scroll-filter {
+  position: fixed;
+  bottom: 28px;
+  right: 88px;
+  z-index: 900;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(183, 46, 74, 0.15);
+  background: #fff;
+  color: #b72e4a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 4px 14px rgba(183, 46, 74, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(20px) scale(0.85);
+  transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+  pointer-events: none;
+}
+.scroll-filter[hidden] { display: none; }
+.scroll-filter.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.scroll-filter:hover {
+  background: #b72e4a;
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+}
+
+@media (max-width: 900px) {
+  .scroll-filter { right: 78px; bottom: 18px; width: 44px; height: 44px; }
+}
+@media (max-width: 600px) {
+  .scroll-top { bottom: 18px; right: 18px; width: 44px; height: 44px; }
+}
+
 
 /* ============================================================
    АДАПТИВ
@@ -1435,6 +1682,80 @@ background: rgba(255,255,255,0.3) !important;
   flex-wrap: wrap;
   gap: 16px;
   margin-top: 32px;
+}
+
+/* ============ КНОПКА «НАВЕРХ» ============ */
+.scroll-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 900;
+
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff;
+  color: #b72e4a;
+  box-shadow:
+    0 4px 14px rgba(183, 46, 74, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(183, 46, 74, 0.15);
+
+  transform: translateY(20px) scale(0.85);
+  opacity: 0;
+  transition:
+    transform .3s cubic-bezier(.34, 1.56, .64, 1),
+    opacity .25s ease,
+    box-shadow .25s ease,
+    background .25s ease,
+    color .25s ease;
+  pointer-events: none;
+}
+
+.scroll-top[hidden] { display: none; }
+
+/* Появление */
+.scroll-top.is-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Ховер — розовый фон */
+.scroll-top:hover {
+  background: #b72e4a;
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow:
+    0 8px 22px rgba(183, 46, 74, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.scroll-top:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.scroll-top:focus-visible {
+  outline: 2px solid #b72e4a;
+  outline-offset: 3px;
+}
+
+/* На мобильных — чуть меньше и ближе к краю */
+@media (max-width: 600px) {
+  .scroll-top {
+    bottom: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+  }
 }
 
 /* === Footer (на всех страницах) === */
@@ -2352,6 +2673,28 @@ background: rgba(255,255,255,0.3) !important;
 .latest-review__thumb-empty {
   font-size: 28px;
   line-height: 1;
+}
+
+.latest-review__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.latest-review__score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  background: #fdf2f5;
+  color: #b72e4a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
 /* Тело карточки */
