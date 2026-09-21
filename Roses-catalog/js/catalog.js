@@ -580,49 +580,7 @@
   }, { passive: false });
 })();
 
-// === КНОПКА «НАВЕРХ» + «К ФИЛЬТРАМ» ===
-(function () {
-  const btnTop = document.getElementById('scrollTop');
-  const btnFilter = document.getElementById('scrollFilter');
-  const SHOW_AFTER = 600;
 
-  let ticking = false;
-  function update() {
-    const y = window.scrollY || document.documentElement.scrollTop;
-
-    if (btnTop) {
-      btnTop.classList.toggle('is-visible', y > SHOW_AFTER);
-    }
-    if (btnFilter) {
-      const isMobile = window.innerWidth <= 900;
-      btnFilter.classList.toggle('is-visible', isMobile && y > SHOW_AFTER);
-    }
-    ticking = false;
-  }
-
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  }, { passive: true });
-
-  window.addEventListener('resize', update);
-  update();
-
-  if (btnTop) {
-    btnTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-  if (btnFilter) {
-    btnFilter.addEventListener('click', () => {
-      const toggle = document.getElementById('mobileFilterToggle');
-      if (toggle) toggle.click();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-})();
 
 // === ЛИПКАЯ ПАНЕЛЬ ПОИСКА ===
 (function () {
@@ -640,6 +598,8 @@
   );
   obs.observe(sentinel);
 })();
+
+
 
 // 
 // 

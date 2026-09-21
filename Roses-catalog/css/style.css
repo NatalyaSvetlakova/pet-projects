@@ -1410,96 +1410,67 @@ background: rgba(255,255,255,0.3) !important;
 }
 
 /* ============ КНОПКА «НАВЕРХ» ============ */
+/* ============================================
+   КНОПКА «НАВЕРХ»
+   ============================================ */
 .scroll-top {
   position: fixed;
   bottom: 28px;
   right: 28px;
   z-index: 900;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  cursor: pointer;
+  border: 1px solid rgba(183, 46, 74, 0.15);
+  background: #ffffff;
+  color: #b72e4a;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  color: #b72e4a;
-  border: 1px solid rgba(183, 46, 74, 0.15);
+  cursor: pointer;
+  
   box-shadow:
     0 4px 14px rgba(183, 46, 74, 0.18),
     0 2px 4px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transform: translateY(20px) scale(0.85);
+  
+  /* Начальное скрытое состояние */
   opacity: 0;
-  transition:
-    transform .3s cubic-bezier(.34, 1.56, .64, 1),
-    opacity .25s ease,
-    box-shadow .25s ease,
-    background .25s ease,
-    color .25s ease;
-  pointer-events: none;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.85);
+  
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.scroll-top[hidden] { display: none; }
+
+/* Появление кнопки */
 .scroll-top.is-visible {
-  transform: translateY(0) scale(1);
   opacity: 1;
-  pointer-events: auto;
+  visibility: visible;
+  transform: translateY(0) scale(1);
 }
+
+/* Наведение */
 .scroll-top:hover {
   background: #b72e4a;
-  color: #fff;
+  color: #ffffff;
   transform: translateY(-3px) scale(1.05);
   box-shadow:
     0 8px 22px rgba(183, 46, 74, 0.35),
     0 2px 6px rgba(0, 0, 0, 0.12);
 }
-.scroll-top:active { transform: translateY(0) scale(0.98); }
-.scroll-top:focus-visible {
-  outline: 2px solid #b72e4a;
-  outline-offset: 3px;
+
+.scroll-top:active {
+  transform: translateY(0) scale(0.98);
 }
 
-/* ============ КНОПКА «К ФИЛЬТРАМ» ============ */
-.scroll-filter {
-  position: fixed;
-  bottom: 28px;
-  right: 88px;
-  z-index: 900;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1px solid rgba(183, 46, 74, 0.15);
-  background: #fff;
-  color: #b72e4a;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow:
-    0 4px 14px rgba(183, 46, 74, 0.18),
-    0 2px 4px rgba(0, 0, 0, 0.08);
-  opacity: 0;
-  transform: translateY(20px) scale(0.85);
-  transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
-  pointer-events: none;
-}
-.scroll-filter[hidden] { display: none; }
-.scroll-filter.is-visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-.scroll-filter:hover {
-  background: #b72e4a;
-  color: #fff;
-  transform: translateY(-3px) scale(1.05);
-}
-
-@media (max-width: 900px) {
-  .scroll-filter { right: 78px; bottom: 18px; width: 44px; height: 44px; }
-}
+/* На мобильных — чуть меньше и ближе к краю */
 @media (max-width: 600px) {
-  .scroll-top { bottom: 18px; right: 18px; width: 44px; height: 44px; }
+  .scroll-top {
+    bottom: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+  }
 }
 
 
@@ -1684,6 +1655,128 @@ background: rgba(255,255,255,0.3) !important;
   margin-top: 32px;
 }
 
+.about-hero {
+  max-width: 760px;
+  margin: 80px auto 60px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.about-hero__eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4f7a5e;
+  margin: 0 0 16px;
+  font-weight: 500;
+}
+
+.about-hero__title {
+  font-family: 'Georgia', serif;
+  font-size: 4rem;
+  color: #b72e4a;
+  margin: 0 0 20px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1.05;
+}
+
+.about-hero__lead {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+  font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .about-hero__title { font-size: 2.6rem; }
+  .about-hero__lead  { font-size: 1.05rem; }
+}
+
+.about-stats {
+  max-width: 900px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  text-align: center;
+}
+
+.about-stat span {
+  display: block;
+  font-family: 'Georgia', serif;
+  font-size: 2.8rem;
+  color: #b72e4a;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.about-stat small {
+  font-size: 0.85rem;
+  color: #777;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 700px) {
+  .about-stats { grid-template-columns: repeat(2, 1fr); gap: 32px 20px; }
+}
+
+.about-cards {
+  max-width: 1000px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.about-card {
+  background: #fff;
+  border: 1px solid #f0e6ea;
+  border-radius: 18px;
+  padding: 28px 24px;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(183, 46, 74, 0.08);
+}
+
+.about-card h3 {
+  font-family: 'Georgia', serif;
+  font-size: 1.25rem;
+  color: #b72e4a;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.about-card p {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #555;
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .about-cards { grid-template-columns: 1fr; }
+}
+
+.about-cta {
+  max-width: 600px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+  text-align: center;
+}
+.about-cta p {
+  font-family: 'Georgia', serif;
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0 0 20px;
+}
+
 /* ============ КНОПКА «НАВЕРХ» ============ */
 .scroll-top {
   position: fixed;
@@ -1757,6 +1850,111 @@ background: rgba(255,255,255,0.3) !important;
     height: 44px;
   }
 }
+
+/* ============================================================
+   ГАЛЕРЕЯ РОЗ — бегущая строка
+   ============================================================ */
+
+.rose-marquee {
+  position: relative;
+  overflow: hidden;
+  margin: 80px 0 0;
+  padding: 32px 0;
+  background: #fdfaf8;                /* тон в тон футеру */
+  border-top: 1px solid #f0e6ea;
+  border-bottom: 1px solid #f0e6ea;
+
+  /* Мягкое затухание краёв — снимает эффект «обрубленности» */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+}
+
+.rose-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee 55s linear infinite;
+  will-change: transform;
+}
+
+/* Пауза при наведении — чтобы можно было рассмотреть */
+.rose-marquee:hover .rose-marquee__track {
+  animation-play-state: paused;
+}
+
+.rose-marquee__set {
+  display: flex;
+  gap: 20px;
+  padding-right: 20px;               /* отступ до следующего набора */
+  flex-shrink: 0;
+}
+
+.rose-marquee__item {
+  flex-shrink: 0;
+  width: 200px;
+  height: 260px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(90, 60, 70, 0.06);
+  transition:
+    transform .5s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .5s ease;
+}
+
+.rose-marquee__item:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 12px 28px rgba(90, 60, 70, 0.14);
+}
+
+.rose-marquee__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+
+  /* Приглушаем картинки — сдержанность = премиум */
+  filter: saturate(0.85) contrast(1.02);
+  transition: filter .5s ease;
+}
+
+.rose-marquee__item:hover img {
+  filter: saturate(1.05) contrast(1.05);
+}
+
+/* Анимация: сдвигаем ровно на половину — два набора одинаковых */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Отключаем для тех, кто не любит анимации */
+@media (prefers-reduced-motion: reduce) {
+  .rose-marquee__track {
+    animation: none;
+  }
+}
+
+/* Мобильные — карточки меньше */
+@media (max-width: 700px) {
+  .rose-marquee {
+    margin-top: 48px;
+    padding: 20px 0;
+  }
+  .rose-marquee__set { gap: 14px; padding-right: 14px; }
+  .rose-marquee__item { width: 140px; height: 180px; border-radius: 12px; }
+}
+
 
 /* === Footer (на всех страницах) === */
 

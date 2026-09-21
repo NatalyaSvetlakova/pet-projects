@@ -28,83 +28,138 @@
   </header>
 
   <div class="about-page">
-    <h1>О проекте «Азбука Роз»</h1>
-    <p>Многостраничный веб-сайт-каталог сортов роз, созданный как пет-проект
-       для портфолио веб-разработчика. Проект демонстрирует работу с HTML,
-       CSS и чистым JavaScript без фреймворков.</p>
-
-    <h2>Цель проекта</h2>
-    <p>Показать умение создавать многостраничные сайты с динамическим
-       контентом, работой с данными, фильтрацией, поиском, сортировкой,
-       управлением состоянием через localStorage и адаптивной вёрсткой.</p>
-
-    <h2>Технологии</h2>
-    <ul>
-      <li>HTML5 — семантическая разметка</li>
-      <li>CSS3 — flexbox, grid, медиа-запросы, CSS-переменные</li>
-      <li>JavaScript (ES6+) — DOM, массивы, URLSearchParams</li>
-      <li>localStorage — сохранение избранного</li>
-      <li>Git + GitHub Pages</li>
-    </ul>
-
-    <h2>Что реализовано</h2>
-    <ul>
-      <li>Слайдер на главной с автопрокруткой</li>
-      <li>Каталог с фильтрацией, поиском и сортировкой</li>
-      <li>Динамические страницы сортов по URL-параметрам</li>
-      <li>Мини-галерея с переключением фото</li>
-      <li>Избранное через localStorage</li>
-      <li>Адаптивная вёрстка + бургер-меню</li>
-    </ul>
-
-    <div class="about__links">
-      <a href="catalog.html" class="btn">Открыть каталог</a>
-      <a href="https://github.com/your-username/roses-catalog" target="_blank" class="btn btn--outline">GitHub</a>
-    </div>
-  </div>
-
-  <footer class="site-footer">
-  <div class="site-footer__inner">
-
-    <div class="site-footer__brand">
-      <span class="site-footer__rose" aria-hidden="true">🌹</span>
-      <span class="site-footer__brand-name">Азбука Роз</span>
-    </div>
-
-    <p class="site-footer__description">
-      Каталог сортов роз, рейтингов и отзывов
+    
+  <section class="about-hero">
+    <p class="about-hero__eyebrow">Pet-project · 2026</p>
+    <h1 class="about-hero__title">Азбука Роз</h1>
+    <p class="about-hero__lead">
+      Интерактивный каталог роз с фильтрацией по ключевым параметрам, 
+      отзывы садоводов и профессиональная онлайн-поддержка.
     </p>
+  </section>
 
-    <p class="site-footer__project">
-      Pet-project веб-разработчика
-    </p>
+  <section class="about-stats">
+    <div class="about-stat"><span>75</span><small>сортов в каталоге</small></div>
+    <div class="about-stat"><span>10</span><small>садовых групп</small></div>
+    <div class="about-stat"><span>200+</span><small>фотографий роз</small></div>
+    <div class="about-stat"><span>500+</span><small>отзывов садоводов</small></div>
+  </section>
 
-    <div class="site-footer__author">
-      <span class="site-footer__label">Автор</span>
-      <span class="site-footer__name">Наталья Светлакова</span>
-      <span class="site-footer__role">Web Developer</span>
+  <section class="about-cards">
+    <article class="about-card">
+      <h3>Цель проекта</h3>
+      <p>Показать умение создавать многостраничные сайты с динамическим контентом, работой с данными, фильтрацией, поиском, сортировкой, управлением состоянием через localStorage и адаптивной вёрсткой.</p>
+      </article>
+    <article class="about-card">
+      <h3>Технологии</h3>
+      <p>HTML5 — семантическая разметка
+        CSS3 — flexbox, grid, медиа-запросы, CSS-переменные
+        JavaScript (ES6+) — DOM, массивы, URLSearchParams
+        localStorage — сохранение избранного
+        Git + GitHub Pages</p>
+      </article>
+    <article class="about-card">
+      <h3>Что реализовано</h3>
+      <p>Слайдер на главной с автопрокруткой
+        Каталог с фильтрацией, поиском и сортировкой
+        Динамические страницы сортов по URL-параметрам
+        Мини-галерея с переключением фото
+        Избранное через localStorage
+        Адаптивная вёрстка + бургер-меню</p>
+    </article>
+  </section>
+
+  <section class="about-cards">
+    <article class="about-card">
+      <h3>Что это</h3>
+      <p>Каталог сортов роз с фильтрами, рейтингами и отзывами садоводов.
+        Каждый сорт описан по 12 параметрам — от аромата до морозостойкости.</p>
+      </article>
+      <article class="about-card">
+        <h3>Зачем</h3>
+        <p>Показать, каким может быть каталог без рекламы и агрессивных баннеров —
+          тихим, честным и красивым.</p>
+      </article>
+      <article class="about-card">
+        <h3>Для кого</h3>
+        <p>Для тех, кто выбирает первую розу и боится ошибиться. Для тех, кто ищет сорт под конкретное место — тень, альпийскую горку, арку. И для тех, кто просто любит смотреть на красивые цветы и читать живые истории о них.</p>
+      </article>
+    </section>
+
+  <section class="about-cta">
+    <p>Загляните в каталог — там уже ждут 75 роз.</p>
+    <a href="catalog.html" class="btn">Открыть каталог</a>
+  </section>
+
+  <!-- ===== ГАЛЕРЕЯ РОЗ (бегущая строка) ===== -->
+  <section class="rose-marquee" aria-label="Галерея сортов роз">
+    <div class="rose-marquee__track">
+      <!-- Первый набор картинок -->
+      <div class="rose-marquee__set">
+        <div class="rose-marquee__item"><img src="img/photo_1.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_5.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_12.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_18.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_23.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_29.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_34.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_40.jpg" alt="" loading="lazy"></div>
+      </div>
+      <!-- Дубликат набора — нужен для бесшовного цикла -->
+      <div class="rose-marquee__set" aria-hidden="true">
+        <div class="rose-marquee__item"><img src="img/photo_1.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_5.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_12.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_18.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_23.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_29.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_34.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_40.jpg" alt="" loading="lazy"></div>
+      </div>
     </div>
+  </section>
 
-    <div class="site-footer__stack">
-      <span class="site-footer__label">Стек</span>
-      <span>HTML · CSS · JavaScript · LocalStorage</span>
+    <footer class="site-footer">
+    <div class="site-footer__inner">
+
+      <div class="site-footer__brand">
+        <span class="site-footer__rose" aria-hidden="true">🌹</span>
+        <span class="site-footer__brand-name">Азбука Роз</span>
+      </div>
+
+      <p class="site-footer__description">
+        Каталог сортов роз, рейтингов и отзывов
+      </p>
+
+      <p class="site-footer__project">
+        Pet-project веб-разработчика
+      </p>
+
+      <div class="site-footer__author">
+        <span class="site-footer__label">Автор</span>
+        <span class="site-footer__name">Наталья Светлакова</span>
+        <span class="site-footer__role">Web Developer</span>
+      </div>
+
+      <div class="site-footer__stack">
+        <span class="site-footer__label">Стек</span>
+        <span>HTML · CSS · JavaScript · LocalStorage</span>
+      </div>
+
+      <div class="site-footer__links">
+        <a href="https://github.com/NatalyaSvetlakova"
+          target="_blank"
+          rel="noopener noreferrer">
+          GitHub
+        </a>  
+      </div>
+
+      <div class="site-footer__bottom">
+        <span>© 2026 Наталья Светлакова</span>
+        <span>Проект о мире роз, созданный в образовательных и демонстрационных целях с вниманием к деталям <span class="heart">♥</span></span>
+      </div>
     </div>
-
-    <div class="site-footer__links">
-      <a href="https://github.com/NatalyaSvetlakova"
-         target="_blank"
-         rel="noopener noreferrer">
-        GitHub
-      </a>  
-    </div>
-
-    <div class="site-footer__bottom">
-      <span>© 2026 Наталья Светлакова</span>
-      <span>Проект о мире роз, созданный в образовательных и демонстрационных целях с вниманием к деталям <span class="heart">♥</span></span>
-    </div>
-
-  </div>
-</footer>
-
+  </footer>  
+  <script src="js/scroll-top.js"></script>
 </body>
 </html>

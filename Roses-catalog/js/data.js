@@ -5494,8 +5494,6 @@ console.log('❤️ В избранном:', favorites.count(), 'сортов');
   window.RoseRatings = { getMergedRating, getUserReviews, addUserReview };
 })();
 
-
-
 // const categories = [
 //   { value: 'all', label: 'Все' },
 //   { value: 'hybrid_tea', label: 'Чайно‑гибридные' },
