@@ -186,6 +186,12 @@
   const filterBtns  = document.querySelectorAll('.filter-btn');
   const countEl     = document.getElementById('catalogCount');
 
+  const loadMoreWrap  = document.getElementById('loadMoreWrap');
+  const loadMoreBtn   = document.getElementById('loadMoreBtn');
+  const loadMoreCount = document.getElementById('loadMoreCount');
+  const loadMoreInfo  = document.getElementById('loadMoreInfo');
+
+
   let descEl = document.getElementById('categoryDescription');
   if (!descEl && countEl && countEl.parentNode) {
     descEl = document.createElement('div');
@@ -219,6 +225,11 @@
   };
 
   let shouldScrollToTop = false;
+
+   // ===== ПАГИНАЦИЯ «ПОКАЗАТЬ ЕЩЁ» =====
+  const PER_PAGE = 12;
+  let visibleCount = PER_PAGE;
+  let currentFilteredRoses = [];
 
   const FILTER_LABELS = {
     color: 'Цвет', bloom: 'Цветение', scent: 'Аромат',
@@ -292,7 +303,7 @@
   }
 
   // ============================================================
-  // 8. ГЛАВНЫЙ РЕНДЕР
+  // 8.1. ГЛАВНЫЙ РЕНДЕР
   // ============================================================
 
   function renderCatalog() {
@@ -369,6 +380,10 @@
     if (countEl) countEl.textContent = `Найдено ${filtered.length} сортов`;
 
     // --- РЕНДЕР ---
+     // --- ПАГИНАЦИЯ: сохраняем результат и сбрасываем счётчик ---
+    currentFilteredRoses = filtered;
+    visibleCount = PER_PAGE;
+
     if (filtered.length === 0) {
       container.innerHTML = `
         <div style="text-align:center;padding:60px 20px;color:#999;grid-column:1/-1;">
@@ -376,12 +391,17 @@
           <p style="font-family:Georgia,serif;font-size:1.2rem;">Ничего не найдено</p>
           <p style="color:#bbb;">Попробуйте изменить параметры поиска</p>
         </div>`;
+      updateLoadMoreUI();          // ← скроет блок, т.к. total = 0
       renderActiveFilters();
       updateGroupCounters();
       return;
     }
 
-    container.innerHTML = filtered.map(rose => renderCard(rose)).join('');
+    // Рендерим только первую порцию
+    renderCards(currentFilteredRoses.slice(0, visibleCount));
+    updateLoadMoreUI();
+
+    // container.innerHTML = filtered.map(rose => renderCard(rose)).join('');
 
     // Если фильтр был изменён пользователем — плавно скроллим к началу
     if (shouldScrollToTop) {
@@ -420,6 +440,85 @@
 
     renderActiveFilters();
     updateGroupCounters();
+  }
+
+   // ============================================================
+  // 8.2. ПАГИНАЦИЯ «ПОКАЗАТЬ ЕЩЁ»
+  // ============================================================
+
+  // Отдельный рендер списка — используется и renderCatalog, и кнопкой
+  function renderCards(list) {
+    container.innerHTML = list.map(rose => renderCard(rose)).join('');
+  }
+
+  // Обновляет видимость и текст кнопки
+  function updateLoadMoreUI() {
+    if (!loadMoreWrap) return;
+
+    const total = currentFilteredRoses.length;
+    const shown = Math.min(visibleCount, total);
+    const remaining = total - shown;
+
+    // Если всё влезает на одну порцию — прячем весь блок
+    if (total <= PER_PAGE) {
+      loadMoreWrap.hidden = true;
+      return;
+    }
+
+    loadMoreWrap.hidden = false;
+
+    if (remaining > 0) {
+      loadMoreBtn.hidden = false;
+      loadMoreCount.textContent = `+${Math.min(PER_PAGE, remaining)}`;
+      loadMoreInfo.textContent  = `Показано ${shown} из ${total}`;
+    } else {
+      loadMoreBtn.hidden = true;
+      loadMoreInfo.textContent  = `Показаны все ${total} сортов`;
+    }
+  }
+
+  // Обработчик клика
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', () => {
+      const prevCount = visibleCount;
+      visibleCount += PER_PAGE;
+
+      // Перерисовываем от начала до нового visibleCount
+      renderCards(currentFilteredRoses.slice(0, visibleCount));
+
+      // Заново навешиваем анимацию появления и обработчики на новые карточки
+      container.querySelectorAll('.card').forEach((card, i) => {
+        card.style.animationDelay = `${Math.min(i * 25, 300)}ms`;
+      });
+      container.querySelectorAll('.card__fav-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault(); e.stopPropagation();
+          const id = this.dataset.id;
+          toggleFavorite(id, this);
+          const now = isInFavorites(id);
+          this.textContent = now ? '❤️ В избранное' : '♡ В избранное';
+          this.classList.toggle('active', now);
+        });
+      });
+      // Анимируем звёзды
+      container.querySelectorAll('.card__badge[data-rating]').forEach(badge => {
+        const v = badge.querySelector('.card__badge-value');
+        if (v) animateNumber(v, parseFloat(badge.dataset.rating), '');
+      });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        container.querySelectorAll('.stars-visual[data-rating]').forEach(el => {
+          el.style.setProperty('--rating', el.dataset.rating);
+        });
+      }));
+
+      updateLoadMoreUI();
+
+      // Плавно скроллим к первой из новых карточек
+      const firstNew = container.children[prevCount];
+      if (firstNew) {
+        firstNew.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   }
 
   // ============================================================
@@ -580,8 +679,6 @@
   }, { passive: false });
 })();
 
-
-
 // === ЛИПКАЯ ПАНЕЛЬ ПОИСКА ===
 (function () {
   const controls = document.querySelector('.catalog__controls');
@@ -598,9 +695,6 @@
   );
   obs.observe(sentinel);
 })();
-
-
-
 // 
 // 
 // В бан 19.09.26 после доработки ФИЛЬТРОВ
