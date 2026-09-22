@@ -194,3 +194,72 @@ function updateRoseRatingUI(rose) {
     if (countEl) countEl.textContent = count;
    }); // ← закрывает forEach
 }     // ← закрывает updateRoseRatingUI
+
+/* ============================================================
+   ФОРМА ОТЗЫВА: КЛИК ПО ЗВЁЗДАМ И ОТПРАВКА
+   ============================================================ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('reviewForm');
+  if (!form) return;
+
+  const stars = form.querySelectorAll('.rating-input__star');
+  const scoreInput = form.querySelector('#reviewScore');
+  const hint = form.querySelector('#ratingHint');
+
+  // --- Клик по звезде: подсветить выбранное количество ---
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      const value = parseInt(star.dataset.value, 10);
+
+      // Снимаем active со всех
+      stars.forEach(s => s.classList.remove('active'));
+
+      // Добавляем active первым N звёздам
+      stars.forEach(s => {
+        if (parseInt(s.dataset.value, 10) <= value) {
+          s.classList.add('active');
+        }
+      });
+
+      // Обновляем hidden-инпут и подсказку
+      if (scoreInput) scoreInput.value = value;
+      if (hint) hint.textContent = `Ваша оценка: ${value} из 5`;
+    });
+
+    // --- Hover: предпросмотр ---
+    star.addEventListener('mouseenter', () => {
+      const value = parseInt(star.dataset.value, 10);
+      stars.forEach(s => {
+        s.classList.toggle(
+          'hovered',
+          parseInt(s.dataset.value, 10) <= value
+        );
+      });
+    });
+  });
+
+  // Убираем hover-подсветку при уходе мыши
+  form.querySelector('.rating-input')?.addEventListener('mouseleave', () => {
+    stars.forEach(s => s.classList.remove('hovered'));
+  });
+
+  // --- Сброс формы после отправки ---
+  form.addEventListener('submit', () => {
+    setTimeout(() => {
+      stars.forEach(s => s.classList.remove('active'));
+      if (scoreInput) scoreInput.value = '0';
+      if (hint) hint.textContent = 'Нажмите на звёзды';
+    }, 0);
+  });
+
+  // --- Сброс формы по кнопке «Отмена» ---
+  const cancelBtn = document.getElementById('reviewCancelBtn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      stars.forEach(s => s.classList.remove('active'));
+      if (scoreInput) scoreInput.value = '0';
+      if (hint) hint.textContent = 'Нажмите на звёзды';
+    });
+  }
+});

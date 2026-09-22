@@ -442,7 +442,7 @@ function initQuestions(rose) {
     const questions = getQuestions(rose.id);   // ← только для этого сорта
 
     if (questions.length === 0) {
-      listEl.innerHTML = '<p class="reviews-empty">Пока нет вопросов — задайте первый!</p>';
+      listEl.innerHTML = '<p class="empty-hint">Пока нет вопросов — задайте первый!</p>';
     } else {
       listEl.innerHTML = questions.map(q => {
         const repliesHtml = (q.replies || []).map(r => {

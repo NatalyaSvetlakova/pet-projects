@@ -103,6 +103,87 @@ renderReviews() перерисовывает список.
 Избранное
 favorites.js хранит массив ID сортов в localStorage. На странице избранного favorites-page.js читает этот массив и отрисовывает карточки.
 
+Объединенные стили для всего проекта в style.css
+style.css
+│
+├── :root
+├── html[data-theme="dark"]
+├── Ресет, body, a, ul
+├── .page-wrapper, .header, .nav
+├── .section, .btn, .card
+├── .cards-grid, .hero-slider
+├── Каталог (swatches, filters, pagination)
+├── Раздел отзывов и вопросов
+├── .favorites-*, .latest-reviews, .feedback-*, scroll-top, theme-toggle
+│
+├── структура + базовые стилистраницы сорта
+│      → .page-wrapper, .rose-layout, .rose-specs, .rose-header, ...
+│      → адаптив для rose (1100 / 820 / 480)
+│
+├── все dark-overrides для страницы сорта
+│      → html[data-theme="dark"] .rose-layout__info .section__text { ... }
+│      → html[data-theme="dark"] .rose-specs { ... }
+│      → html[data-theme="dark"] .rose-actions .btn { ... }
+│
+└── Финал: общие dark-overrides (theme-toggle и т.д.)
+Почему именно так:
+
+Rose-структура идёт после каталога и отзывов — браузер её применит.
+
+Rose-адаптив идёт после rose-структуры — перекроет базовые размеры.
+
+Rose-dark-overrides идут после rose-структуры — перекроют цвета, когда тема тёмная.
+
+Всё общее (theme-toggle, scroll-top) — в конце, чтобы ничего не пропустить.
+
+В файле style.css секции идут в таком порядке:
+ДИЗАЙН-ТОКЕНЫ (переменные + тёмная тема)
+:root { ... }
+html[data-theme="dark"] { ... }
+
+БАЗА: ресет, body, типографика
+body, a, button, ul, html
+
+ШАПКА / НАВИГАЦИЯ
+.header, .nav, .nav__logo, .nav__links, .nav__toggle
+
+ОБЩИЕ ЭЛЕМЕНТЫ: секции, кнопки, карточки
+.section, .section__title, .section__subtitle
+.btn, .btn--center, .btn--outline
+.card, .cards-grid, .hero-slider-container
+
+КАТАЛОГ
+.catalog-page, .catalog-sidebar, .catalog-content
+.filters-panel, .filter-group, .color-swatch, ...
+.active-filters, .filter-buttons
+.scroll-top (базовый)
+
+РАЗДЕЛ «ОТЗЫВЫ И ВОПРОСЫ»
+.reviews-section, .reviews-card-wrapper
+.tabs-nav, .tab-btn, .tab-content
+.review-card, .rating-summary-col, .review-form, ...
+.answer-feedback, .helpful-btn
+.load-more (пагинация)
+
+СТРАНИЦА СОРТА (бывший rose.css)
+.page-wrapper, .rose-layout, .rose-layout__slider, .rose-layout__info
+.rose-specs, .rose-specs li, strong, span
+.rose-header, .rose-actions, .rose-description-box
+
+/* --- Адаптив для rose: 1100, 820, 480 --- */
+
+/* --- Тёмная тема для rose: все html[data-theme="dark"] .rose-* --- */
+
+ИЗБРАННОЕ   
+.favorites-page, .fav-grid, .fav-card, .fav-empty
+
+ГЛАВНАЯ: последние отзывы  
+.latest-reviews, .latest-review
+
+ТЕМА И ПРОЧЕЕ
+.theme-toggle, .scroll-top (финальная версия)
+
+
 Планы
 □ Добавить сортировку по рейтингу и количеству отзывов.
 □ Реализовать пагинацию в каталоге.

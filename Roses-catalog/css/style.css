@@ -1,17 +1,75 @@
 :root {
-  --color-bg: #fcfbf9;
-  --color-bg-card: #ffffff;
-  --color-primary: #b72e4a;
-  --color-secondary: #4f7a5e;
-  --color-text: #2b2b2b;
-  --color-text-muted: #6b6b6b;
-  --color-border: #e5e5e5;
-  --radius: 16px;
-  --radius-sm: 8px;
-  --shadow-sm: 0 4px 12px rgba(183, 46, 74, 0.08);
+  /* ---------- ЦВЕТА: базовые ---------- */
+  --color-bg: #fcfbf9;     /* основной фон страниц */
+  --color-bg-card: #ffffff;     /* фон карточек, панелей, форм */
+  --color-border: #e5e5e5;    /* тонкие линии, разделители */
+  /* ---------- ЦВЕТА: текст ---------- */
+  --color-text: #2b2b2b;    /* основной текст (почти чёрный) */
+  --color-text-muted: #6b6b6b;     /* второстепенный, приглушённый */
+  --color-text-soft: #4a4a4a;   /* промежуточный — для светлой темы не критично */
+  /* ---------- ЦВЕТА: акценты ---------- */  
+  --color-primary: #b72e4a;     /* фирменный винный (кнопки, ссылки) */
+  --color-secondary: #4f7a5e;    /* спокойный зелёный (подзаголовки, ярлыки) */
+   /* ---------- СКРУГЛЕНИЯ ---------- */
+  --radius: 16px;   /* крупные блоки: карточки, панели */
+  --radius-sm: 8px;   /* мелкие элементы: кнопки, поля */
+  /* ---------- ТЕНИ ---------- */
+  --shadow-sm: 0 4px 12px rgba(183, 46, 74, 0.08);   /* карточки в покое */
   --shadow-lg: 0 12px 32px rgba(183, 46, 74, 0.12);
-  --max-width: 1120px;
-  box-sizing: border-box;
+  /* ---------- РАЗМЕРЫ / СЕТКА ---------- */
+  --max-width: 1120px;     /* предельная ширина контента на всех страницах */
+   /* ---------- ПРОЧЕЕ ---------- */
+  box-sizing: border-box;    /* при наведении, модалки */
+  /* ---- Зелёный акцент для раздела отзывов ---- */
+  --accent-green:       #2c5f2d;   /* активная вкладка, кнопки, аватар */
+  --accent-green-light: #e8f0e8;   /* мягкий фон при hover */
+  --accent-green-dark:  #1e421f;   /* тёмный для hover кнопок */
+
+  /* ---- Звёзды рейтинга (не зависят от темы) ---- */
+  --color-star:         #ffb400;   /* золотой */
+  --color-star-empty:   #e0e0e0;   /* пустая звезда */  
+/* Chrome/Edge/Firefox сами переключают все нативные элементы в светлую палитру */
+  --color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  /* ---------- ЦВЕТА: базовые ---------- */
+  --color-bg: #1a1614;     /* тёплый почти-чёрный, а не чистый #000 */
+  --color-bg-card: #241f1c;     /* карточки чуть светлее фона */
+  --color-border: #3a3330;     /* разделители приглушённые */
+  /* ---------- ЦВЕТА: акценты (осветлённые версии) ---------- */
+  --color-primary: #e6889a;     /* винный → розовый (иначе тонет в фоне) */  
+  --color-secondary: #8fbf9c;     /* зелёный → светло-зелёный */
+   /* ---------- ЦВЕТА: текст ---------- */
+  --color-text: #ece6e2;     /* тёплый белый, не режет глаза */
+  --color-text-soft: #c9c2bc;   /* промежуточный */
+  --color-text-muted: #a09a95;     /* серо-бежевый, читаемый на тёмном */
+  /* ---------- ТЕНИ ---------- */  
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --accent-green:       #5fa870;   /* глубокий, но читаемый на тёмном */
+  --accent-green-light: #2f3a31;   /* фон при hover (было) */
+  --accent-green-dark:  #7fc78f;   /* hover — чуть светлее */
+
+  --color-star:         #ffb400;   /* золотой остаётся золотым */
+  --color-star-empty:   #4a4340;   /* пустая — тёмно-серая */
+/* Chrome/Edge/Firefox сами переключают все нативные элементы в тёмную палитру */
+  --color-scheme: dark;
+}
+
+/* Плавный переход всех цветов при смене темы */
+body, .card, .header, .site-footer, .catalog-sidebar, .rose-specs {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {    
+  /* Плавный переход цветов при смене темы */
+  body, .card, .header, .site-footer, .catalog-sidebar, .rose-specs {
+    transition:
+      background-color 0.3s ease,
+      color            0.3s ease,
+      border-color     0.3s ease;
+  }
 }
 
 /* Плавный скролл + красивые скроллбары */
@@ -28,7 +86,7 @@ html::-webkit-scrollbar-thumb {
   border: 3px solid var(--color-bg);
 }
 html::-webkit-scrollbar-thumb:hover {
-  background: #b72e4a;
+  background: var(--color-primary);
 }
 
 body {
@@ -274,9 +332,19 @@ html {
 /* ===== СЕТКА КАРТОЧЕК ===== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 24px;
   margin: 0;         /* ← убираем лишние отступы */
+}
+
+/* Появление карточек при фильтрации */
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cards-grid .card {
+  animation: cardFadeIn .35s ease both;
 }
 
 /* ===== СЛАЙДЕР НА ГЛАВНОЙ ===== */
@@ -598,12 +666,12 @@ background: rgba(255,255,255,0.3) !important;
 }
 
 .checkbox input:hover {
-  border-color: #b72e4a;
+  border-color: var(--color-primary);
 }
 
 .checkbox input:checked {
-  background: #b72e4a;
-  border-color: #b72e4a;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .checkbox input:checked::after {
@@ -648,7 +716,7 @@ background: rgba(255,255,255,0.3) !important;
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #b72e4a;
+  background: var(--color-primary);
   border: 3px solid #fff;
   box-shadow: 0 2px 6px rgba(183,46,74,.35);
   cursor: grab;
@@ -665,7 +733,7 @@ background: rgba(255,255,255,0.3) !important;
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #b72e4a;
+  background: var(--color-primary);
   border: 3px solid #fff;
   box-shadow: 0 2px 6px rgba(183,46,74,.35);
   cursor: grab;
@@ -811,7 +879,7 @@ background: rgba(255,255,255,0.3) !important;
   opacity: 0;
 
   /* Цвет «листвы» */
-  background: linear-gradient(135deg, #3d5f48 0%, #4f7a5e 100%);
+  background: linear-gradient(135deg, #3d5f48 0%, var(--color-secondary) 100%);
   filter:
     drop-shadow(0 0 0.5px #2c4435)               /* тёмный контур по лепесткам */
     drop-shadow(0 2px 4px rgba(79, 122, 94, 0.35));
@@ -1053,7 +1121,7 @@ background: rgba(255,255,255,0.3) !important;
 .color-swatch__dot--white ~ * input:checked ~ .color-swatch__dot::after,
 /* Жёлтый кружок — БЕЛАЯ галочка */
 .color-swatch[title="Желтый"] input:checked + .color-swatch__dot::after {
-  border-color: #ffffff;                                  /* чисто белая */
+  border-color: var(--color-bg-card);                                  /* чисто белая */
   filter: drop-shadow(0 1px 2px rgba(140, 90, 0, 0.45));  /* тёплая тень для контраста на жёлтом */
 }
 /*  Белый кружок — БЕЖЕВАЯ галочка под цвет обводки */
@@ -1075,7 +1143,7 @@ background: rgba(255,255,255,0.3) !important;
   color: #555;
 }
 .color-swatch input:checked ~ .color-swatch__label {
-  color: #b72e4a;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -1106,13 +1174,13 @@ background: rgba(255,255,255,0.3) !important;
 /* Внешняя сетка: сайдбар | контент | пустая колонка */
 .catalog-page {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1120px) 260px;
-  gap: 32px;
+  grid-template-columns: 240px minmax(0, 1fr) 240px;
+  gap: 40px;
   align-items: start;
   width: 100%;
-  max-width: none;
+  max-width:   1500px;
   margin: 0 auto;
-  padding: 16px 32px 48px;
+  padding: 24px 32px 60px;
   box-sizing: border-box;
 }
 
@@ -1138,7 +1206,7 @@ background: rgba(255,255,255,0.3) !important;
   background: #e0d0d5;
   border-radius: 3px;
 }
-.catalog-sidebar::-webkit-scrollbar-thumb:hover { background: #b72e4a; }
+.catalog-sidebar::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
 
 /* --- КОНТЕНТ --- */
 .catalog-content {
@@ -1171,7 +1239,7 @@ background: rgba(255,255,255,0.3) !important;
   border: 1px solid #f4d4dd;
   border-radius: 100px;
   font-size: 0.82rem;
-  color: #b72e4a;
+  color: var(--color-primary);
   font-weight: 500;
   cursor: pointer;
   transition: background .2s, transform .15s;
@@ -1193,7 +1261,7 @@ background: rgba(255,255,255,0.3) !important;
   transition: background .2s, color .2s;
 }
 .active-filter-chip:hover .active-filter-chip__remove {
-  background: #b72e4a;
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -1207,10 +1275,10 @@ background: rgba(255,255,255,0.3) !important;
   text-underline-offset: 2px;
   cursor: pointer;
 }
-.active-filters__clear:hover { color: #b72e4a; }
+.active-filters__clear:hover { color: var(--color-primary); }
 
 /* Пустая колонка справа для симметрии */
-.catalog-spacer { pointer-events: none; }
+/* .catalog-spacer {  pointer-events: none; } */
 
 /* --- ПАНЕЛЬ ФИЛЬТРОВ --- */
 .filters-panel {
@@ -1270,7 +1338,7 @@ background: rgba(255,255,255,0.3) !important;
   margin-left: auto;
   margin-right: 8px;
   border-radius: 100px;
-  background: #b72e4a;
+  background: var(--color-primary);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -1313,7 +1381,7 @@ background: rgba(255,255,255,0.3) !important;
 }
 .filter-group.open .filter-group__title .arrow {
   transform: rotate(45deg);
-  color: #b72e4a;
+  color: var(--color-primary);
 }
 
 /* --- ВЕРХНЯЯ ПАНЕЛЬ: ПОИСК + СОРТИРОВКА --- */
@@ -1422,8 +1490,8 @@ background: rgba(255,255,255,0.3) !important;
   height: 52px;
   border-radius: 50%;
   border: 1px solid rgba(183, 46, 74, 0.15);
-  background: #ffffff;
-  color: #b72e4a;
+  background: var(--color-bg-card);
+  color: var(--color-primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1451,8 +1519,8 @@ background: rgba(255,255,255,0.3) !important;
 
 /* Наведение */
 .scroll-top:hover {
-  background: #b72e4a;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-bg-card);
   transform: translateY(-3px) scale(1.05);
   box-shadow:
     0 8px 22px rgba(183, 46, 74, 0.35),
@@ -1485,7 +1553,9 @@ background: rgba(255,255,255,0.3) !important;
     gap: 24px;
     padding: 16px 24px 48px;
   }
-  .catalog-spacer { display: none; }
+  .catalog-spacer { 
+    display: none; 
+  }
 }
 
 /* Мобильные: сайдбар — выезжающая панель */
@@ -1612,24 +1682,6 @@ background: rgba(255,255,255,0.3) !important;
   }
 }
 
-.rose-description-box {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.rose-description-box p {
-  font-size: 1.1rem; /* Чуть крупнее стандартного 1rem */
-  line-height: 1.7; /* Высокий интерлиньяж для легкости чтения */
-  color: var(--color-text);
-  margin-bottom: 24px;
-  max-width: 600px; /* ВАЖНО: Ограничиваем ширину текстового блока, чтобы он не растягивался на весь экран и не становился нечитаемым */
-}
-
-.rose-description-box p:last-child {
-  margin-bottom: 0;
-}
-
 .rose-actions {
   margin-top: auto;
 }
@@ -1666,7 +1718,7 @@ background: rgba(255,255,255,0.3) !important;
   font-size: 0.75rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #4f7a5e;
+  color: var(--color-secondary);
   margin: 0 0 16px;
   font-weight: 500;
 }
@@ -1674,7 +1726,7 @@ background: rgba(255,255,255,0.3) !important;
 .about-hero__title {
   font-family: 'Georgia', serif;
   font-size: 4rem;
-  color: #b72e4a;
+  color: var(--color-primary);
   margin: 0 0 20px;
   font-weight: 500;
   letter-spacing: -1px;
@@ -1708,7 +1760,7 @@ background: rgba(255,255,255,0.3) !important;
   display: block;
   font-family: 'Georgia', serif;
   font-size: 2.8rem;
-  color: #b72e4a;
+  color: var(--color-primary);
   line-height: 1;
   margin-bottom: 8px;
 }
@@ -1748,7 +1800,7 @@ background: rgba(255,255,255,0.3) !important;
 .about-card h3 {
   font-family: 'Georgia', serif;
   font-size: 1.25rem;
-  color: #b72e4a;
+  color: var(--color-primary);
   margin: 0 0 12px;
   font-weight: 600;
 }
@@ -1775,80 +1827,6 @@ background: rgba(255,255,255,0.3) !important;
   font-size: 1.3rem;
   color: #333;
   margin: 0 0 20px;
-}
-
-/* ============ КНОПКА «НАВЕРХ» ============ */
-.scroll-top {
-  position: fixed;
-  bottom: 28px;
-  right: 28px;
-  z-index: 900;
-
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #fff;
-  color: #b72e4a;
-  box-shadow:
-    0 4px 14px rgba(183, 46, 74, 0.18),
-    0 2px 4px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(183, 46, 74, 0.15);
-
-  transform: translateY(20px) scale(0.85);
-  opacity: 0;
-  transition:
-    transform .3s cubic-bezier(.34, 1.56, .64, 1),
-    opacity .25s ease,
-    box-shadow .25s ease,
-    background .25s ease,
-    color .25s ease;
-  pointer-events: none;
-}
-
-.scroll-top[hidden] { display: none; }
-
-/* Появление */
-.scroll-top.is-visible {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Ховер — розовый фон */
-.scroll-top:hover {
-  background: #b72e4a;
-  color: #fff;
-  transform: translateY(-3px) scale(1.05);
-  box-shadow:
-    0 8px 22px rgba(183, 46, 74, 0.35),
-    0 2px 6px rgba(0, 0, 0, 0.12);
-}
-
-.scroll-top:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.scroll-top:focus-visible {
-  outline: 2px solid #b72e4a;
-  outline-offset: 3px;
-}
-
-/* На мобильных — чуть меньше и ближе к краю */
-@media (max-width: 600px) {
-  .scroll-top {
-    bottom: 18px;
-    right: 18px;
-    width: 44px;
-    height: 44px;
-  }
 }
 
 /* ============================================================
@@ -1958,183 +1936,239 @@ background: rgba(255,255,255,0.3) !important;
 
 /* === Footer (на всех страницах) === */
 
-/* ========================================
-   FOOTER
-   ======================================== */
+/* ============================================================
+   FOOTER — общий для всех страниц, адаптивный к теме
+   ============================================================ */
 
 .site-footer {
   margin-top: 70px;
-  background: #fffdfb;
-  border-top: 1px solid #e8e2dc;
-  color: #5f625d;
+  background: var(--color-bg-card);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
 .site-footer__inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 45px 24px 22px;
+  padding: 60px 24px 28px;
   text-align: center;
 }
 
-/* Название проекта */
-
+/* --- Бренд --- */
 .site-footer__brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .site-footer__rose {
-  font-size: 21px;
+  font-size: 22px;
   line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(183, 46, 74, 0.25));
 }
 
 .site-footer__brand-name {
-  color: #3f5144;
-  font-size: 19px;
+  font-family: 'Georgia', serif;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.2px;
+  color: var(--color-primary);
 }
 
-/* Описание */
-
+/* --- Описание --- */
 .site-footer__description {
   margin: 0;
-  color: #777a75;
   font-size: 14px;
   line-height: 1.6;
+  color: var(--color-text-muted);
 }
-
-/* Pet-project */
 
 .site-footer__project {
-  margin: 10px 0 28px;
-  color: #9a9c97;
+  margin: 6px 0 32px;
   font-size: 13px;
+  color: var(--color-text-muted);
+  opacity: 0.75;
 }
 
-/* Автор */
-
+/* --- Автор / стек: лейбл в виде капсулы --- */
 .site-footer__author,
 .site-footer__stack {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 13px;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 13.5px;
+  color: var(--color-text-muted);
 }
 
 .site-footer__label {
-  color: #9a9c97;
-  margin-right: 3px;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 .site-footer__name {
-  color: #4d594f;
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .site-footer__role {
-  color: #7d827d;
+  color: var(--color-text-muted);
 }
-
-/* Стек */
 
 .site-footer__stack {
-  margin-bottom: 22px;
-  color: #70756f;
-}
-
-/* Ссылки */
-
-.site-footer__links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
   margin-bottom: 28px;
 }
 
+/* --- Соцссылки: аккуратные капсулы --- */
+.site-footer__links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
 .site-footer__links a {
-  color: #53695a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .site-footer__links a:hover {
-  color: #9b5962;
-  text-decoration: underline;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
-.site-footer__dot {
-  color: #c5c5c0;
-}
-
-/* Нижняя строка */
-
+/* --- Нижняя строка --- */
 .site-footer__bottom {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
-  padding-top: 18px;
-  border-top: 1px solid #eee9e4;
-  color: #a0a19d;
-  font-size: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 12.5px;
+}
+
+/* Правый текст — ограничиваем ширину и выравниваем по правому краю */
+.site-footer__bottom > span:last-child {
+  max-width: 480px;          /* ← заставляет текст переноситься на 2 строки */
+  text-align: right;         /* ← прижимает к правому краю */
+  line-height: 1.5;
 }
 
 .site-footer .heart {
-  color: #b56b73;
+  color: var(--color-primary);
   font-size: 13px;
 }
 
+/* ============================================================
+   FOOTER — приглушение ярких элементов в тёмной теме
+   ============================================================ */
 
-/* ========================================
-   MOBILE
-   ======================================== */
+html[data-theme="dark"] .site-footer__brand-name {
+  color: var(--color-primary);       /* уже приглушённый розовый — ок */
+  opacity: 0.95;
+}
 
+html[data-theme="dark"] .site-footer__description {
+  color: var(--color-text-muted);
+  opacity: 0.9;
+}
+
+html[data-theme="dark"] .site-footer__project {
+  color: var(--color-text-muted);
+  opacity: 0.65;                     /* самое тихое — почти невидимое */
+}
+
+/* Автор */
+html[data-theme="dark"] .site-footer__name {
+  color: var(--color-text-soft);     /* #c9c2bc — вместо #ece6e2 */
+  opacity: 0.95;
+}
+
+html[data-theme="dark"] .site-footer__role {
+  color: var(--color-text-muted);
+  opacity: 0.85;
+}
+
+/* Стек */
+html[data-theme="dark"] .site-footer__stack {
+  color: var(--color-text-muted);
+  opacity: 0.85;
+}
+
+html[data-theme="dark"] .site-footer__stack span:not(.site-footer__label) {
+  color: var(--color-text-muted);
+}
+
+/* Лейблы «Автор» и «Стек» — капсулы */
+html[data-theme="dark"] .site-footer__label {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-muted);
+}
+
+/* GitHub */
+html[data-theme="dark"] .site-footer__links a {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-soft);
+}
+
+html[data-theme="dark"] .site-footer__links a:hover {
+  background: rgba(230, 136, 154, 0.12);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Нижняя строка */
+html[data-theme="dark"] .site-footer__bottom {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+  border-top-color: var(--color-border);
+}
+
+/* --- Адаптив --- */
 @media (max-width: 600px) {
-
-  .site-footer {
-    margin-top: 50px;
-  }
-
-  .site-footer__inner {
-    padding: 35px 18px 18px;
-  }
-
-  .site-footer__brand-name {
-    font-size: 18px;
-  }
-
-  .site-footer__description {
-    font-size: 13px;
-  }
-
+  .site-footer { margin-top: 50px; }
+  .site-footer__inner { padding: 42px 20px 22px; }
+  .site-footer__brand-name { font-size: 18px; }
+  .site-footer__description { font-size: 13px; }
   .site-footer__author,
   .site-footer__stack {
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
   }
-
-  .site-footer__stack {
-    margin-top: 16px;
-  }
-
-  .site-footer__links {
-    margin-top: 22px;
-  }
-
+  .site-footer__links { margin-top: 8px; }
   .site-footer__bottom {
     flex-direction: column;
-    gap: 7px;
     text-align: center;
+    gap: 10px;
   }
 }
 
@@ -2280,13 +2314,19 @@ background: rgba(255,255,255,0.3) !important;
 }
 
 /* Контейнер рейтинга: выстраиваем звёзды и счётчик в строку */
-.rating-stars {
-  display: inline-flex;
-  align-items: center;
-  /* gap: 8px; */
-  gap: 6px;
-  margin-bottom: 10px;
-  font-size: 14px;
+/* Главная: компактный вид */
+.card .rating-stars { 
+  display: inline-flex; 
+  gap: 6px; 
+  font-size: 14px; 
+}
+
+/* Отзывы: крупные звёзды */
+.review-card .rating-stars,
+.question-card .rating-stars { 
+  font-size: 18px; 
+  letter-spacing: 3px; 
+  color: var(--color-star); 
 }
 
 /* Звёзды: используем псевдоэлемент с градиентом, 
@@ -2317,68 +2357,1325 @@ background: rgba(255,255,255,0.3) !important;
   font-weight: 500;
 }
 
-/* Блок отзывов (скрыт по умолчанию, если отзывов нет) */
-.reviews-block {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border);
-  display: none; /* скрываем, если массив отзывов пуст */
+/* ============================================================
+   РАЗДЕЛ «ОТЗЫВЫ И ВОПРОСЫ» — общий для всех страниц
+   Все цвета через переменные → работает в тёмной теме
+   ============================================================ */
+
+/* --- Контейнер --- */
+.reviews-section {
+  width: 100%;
+  padding: 50px 20px 70px;
+  background-color: var(--color-bg);
+  box-sizing: border-box;
 }
 
-.reviews-block.active {
-  display: block;
+.reviews-card-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px;
+  background: var(--color-bg-card);
+  border: none;
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
 }
 
-.review-item {
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.review-item:last-child {
+/* --- Вкладки --- */
+.tabs-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
   border-bottom: none;
-  margin-bottom: 0;
 }
 
-.review-header {
+.tab-btn {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
-}
-
-.review-author {
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  font-family: inherit;
+  font-size: 18px;
   font-weight: 600;
-  color: var(--color-primary);
-}
-
-.review-date {
-  font-size: 12px;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);   /* ← добавьте */
   color: var(--color-text-muted);
 }
 
-.review-text {
-  font-size: 14px;
-  color: var(--color-text);
-  line-height: 1.5;
+.tab-btn:hover {
+  background: var(--accent-green-light);
+  color: var(--accent-green);
+  transform: translateY(-2px);
+  border-color: var(--accent-green);        /* ← подсветить рамку */
 }
 
-/* Кнопка "Оставить отзыв" */
-.btn-review {
+.tab-btn.active {
+  background: var(--accent-green);
+  color: var(--color-bg-card);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(0);
+}
+
+.tab-btn .count {
+  padding: 4px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active .count {
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+/* --- Контент вкладок --- */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.tab-content.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Сетки --- */
+.reviews-layout,
+.questions-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 40px;
+  width: 100%;
+}
+
+.questions-layout {
+  grid-template-columns: 1fr;   /* одна колонка для вкладки «Вопросы» */
+}
+
+/* --- Карточки отзывов/вопросов --- */
+.review-card,
+.question-card {
+  padding: 28px;
+  margin-bottom: 24px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid transparent;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.review-card:hover,
+.question-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-left-color: var(--accent-green);
+}
+
+/* --- Шапка карточки --- */
+.review-header,
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-bg-card);
+  background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.user-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.review-meta {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.rating-stars {
+  --rating: 0;
+  position: relative;
+  display: inline-block;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 3px;
+  color: var(--color-star-empty);
+  user-select: none;
+}
+.rating-stars::before {
+  content: "★★★★★";
+}
+.rating-stars::after {
+  content: "★★★★★";
+  position: absolute;
+  inset: 0;
+  width: calc(var(--rating) / 5 * 100%);
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--color-star);               /* залитая часть — золотая */
+  filter: drop-shadow(0 2px 4px rgba(255, 180, 0, 0.25));
+}
+
+.review-text,
+.question-text {
+  margin-bottom: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+/* --- Футер карточки --- */
+.review__footer,
+.review-footer,
+.question-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 15px;
+  border-top: 1px solid var(--color-border);
+}
+
+.review__helpful-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.helpful-btn,
+.review__footer .helpful-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.helpful-btn:hover,
+.review__footer .helpful-btn:hover {
+  background: var(--color-bg-card);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+  box-shadow: var(--shadow-sm);
+}
+
+.helpful-btn.active,
+.review__footer .helpful-btn.active {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  color: var(--color-bg-card);
+}
+
+/* --- Кнопка удаления отзыва --- */
+.review { position: relative; }
+
+.review__delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 16px;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+.review__delete:hover { opacity: 1; }
+
+/* --- Ответы на вопросы --- */
+.question-replies {
+  margin-top: 15px;
+  margin-left: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reply-item {
+  padding: 12px 16px;
+  background: var(--color-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.3s ease;
+}
+
+.reply-item .reply-author {
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-green);
+}
+
+.reply-item .reply-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.reply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-green);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.reply-btn:hover { color: var(--accent-green-dark); text-decoration: underline; }
+
+.reply-form {
+  display: none;
+  margin-top: 12px;
+  margin-left: 52px;
+}
+.reply-form.active { display: block; animation: fadeIn 0.3s ease; }
+
+.reply-form textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.reply-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.1);
+}
+
+.empty-hint {
+  margin: 24px 0;
+  font-size: 15px;
+  color: var(--color-text-muted);
+  opacity: 0.85;
+}
+
+/* --- Контролы списка --- */
+.list-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.sort-select {
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sort-btn {
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 1px dashed var(--color-text-muted);
+  cursor: pointer;
+}
+
+.sort-btn.active {
+  color: var(--accent-green);
+  font-weight: 600;
+  border-bottom: 1px solid var(--accent-green);
+  text-decoration: none;
+}
+
+/* ============================================================
+   ФОРМА ДОБАВЛЕНИЯ ОТЗЫВА
+   ============================================================ */
+
+.review-form__title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.rating-input {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 15px;
+}
+
+.rating-input__label {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-right: 10px;
+}
+
+.rating-input__star {
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--color-border);       /* в тёмной теме — тёмно-серый */
+  transition: color 0.15s ease;
+}
+
+.rating-input__star:hover,
+.rating-input__star.active {
+  color: var(--color-star);
+}
+
+.rating-input__hint {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-left: 10px;
+}
+
+.review-form__error {
+  color: var(--color-primary);
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+
+.review-form__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.rating-input__star:hover,
+.rating-input__star.active,
+.rating-input__star.hovered {
+  color: var(--color-star);
+}
+
+/* --- Правая колонка: рейтинг --- */
+.rating-summary-col {
+  height: fit-content;
+  padding: 32px 24px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 100px;
+}
+
+.rating-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  white-space: nowrap;
+}
+
+.big-stars {
+  position: relative;
+  display: inline-block;
+  font-family: Arial, sans-serif;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 1px;
+  color: varvar(--color-star);
+  filter: drop-shadow(0 0 6px rgba(255, 180, 0, 0.35));
+  user-select: none;
+}
+
+.big-stars::before {
+  content: attr(data-stars);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--rating) / 5 * 100%);
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--color-star);
+  text-shadow: 0 0 12px rgba(255, 180, 0, 0.4);
+  transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: starPulse 2s infinite alternate;
+}
+
+.big-score {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+  animation: scorePop 0.6s ease-out;
+}
+
+@keyframes scorePop {
+  0%   { transform: scale(0.8); opacity: 0; }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes starPulse {
+  0%   { filter: drop-shadow(0 0 2px rgba(255, 180, 0, 0.3)); }
+  100% { filter: drop-shadow(0 0 6px rgba(255, 180, 0, 0.7)); }
+}
+
+.rating-desc,
+.rating-note {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+.rating-desc { margin-bottom: 24px; }
+.rating-note { margin-top: 12px; line-height: 1.4; }
+
+.rating-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.rating-bar-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.bar-track {
+  height: 10px;
+  background: var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffc107, var(--color-star));
+  border-radius: 6px;
+  transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bar-count { text-align: right; }
+
+/* --- Формы --- */
+.review-form,
+.ask-form-card {
+  padding: 30px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+}
+
+.ask-form-card { margin-bottom: 30px; }
+
+.ask-form-card h3 { margin: 0 0 10px; font-size: 18px; color: var(--color-text); }
+.ask-form-card p  { margin: 0 0 15px; font-size: 14px; color: var(--color-text-muted); }
+
+.input-group textarea,
+.review-form input[type="text"],
+.review-form textarea {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.input-group textarea:focus,
+.review-form input[type="text"]:focus,
+.review-form textarea:focus {
+  outline: none;
+  background: var(--color-bg-card);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 4px rgba(44, 95, 45, 0.1);
+}
+
+/* --- Кнопки --- */
+.submit-btn,
+.chat-btn {
+  display: block;
+  width: 100%;
+  padding: 16px 32px;
+  margin-top: 15px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--color-bg-card);
+  background: var(--accent-green);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover,
+.chat-btn:hover {
+  background: var(--accent-green-dark);
+  color: var(--color-bg-card);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.chat-btn {
+  color: var(--accent-green);
+  background: var(--color-bg-card);
+  border: 1px solid var(--accent-green);
+}
+.chat-btn:hover {
+  color: var(--color-bg-card);
+  background: var(--accent-green);
+}
+
+/* --- Инфо-карточка «Как задать вопрос» --- */
+.info-card {
+  padding: 24px;
+  text-align: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.info-card h4 { margin: 0 0 10px; font-size: 16px; color: var(--color-text); }
+.info-card p  { margin: 0 0 20px; font-size: 13px; line-height: 1.5; color: var(--color-text-muted); }
+
+/* --- Плашка с описанием категории --- */
+.category-description {
+  margin: 0 0 30px;
+  padding: 12px 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--accent-green-light);
+  border-left: 4px solid var(--accent-green);
+  border-radius: 0 8px 8px 0;
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* --- Адаптив --- */
+@media (max-width: 900px) {
+  .reviews-card-wrapper { padding: 24px; border-radius: 16px; }
+  .tabs-nav { gap: 10px; }
+  .tab-btn  { padding: 12px 16px; font-size: 15px; }
+  .reviews-layout,
+  .questions-layout { grid-template-columns: 1fr; }
+  .rating-summary-col { position: static; margin-bottom: 24px; order: -1; }
+}
+
+/* ============================================================
+   СТРАНИЦА СОРТА (rose.html)
+   Стили, специфичные только для этой страницы.
+   Общие стили (отзывы, кнопки, карточки) — в style.css
+   ============================================================ */
+/* --- Обёртка: страница сорта идёт без ограничения max-width --- */
+.rose-page-wrapper {
+  max-width: none;
+  padding: 0;
+}
+
+/* --- Сетка: слайдер + информация --- */
+.rose-layout {
+  display: grid;
+  grid-template-columns: 640px 1fr;
+  gap: 48px;
+  align-items: start;
+  max-width: 1400px;
+  min-height: calc(100vh - 160px);
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* --- ЛЕВАЯ КОЛОНКА: слайдер --- */
+.rose-layout__slider {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.rose-layout__slider .hero-wrapper {
+  width: 100%;
+  max-width: 560px;
+  margin: 0;
+  padding: 0;
+}
+
+.rose-layout__slider .hero-slider-container {
+  width: 100%;
+  max-width: 640px;
+  height: 700px;
+  min-height: 700px;
+  max-height: none;
+  margin: 0 auto;
+  aspect-ratio: 3 / 4;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #1a1410;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+
+.rose-layout__slider .rose-slider__slide {
+  height: 700px;
+  min-height: 700px;
+}
+
+/* --- ПРАВАЯ КОЛОНКА: информация --- */
+.rose-layout__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.rose-layout__info .section__title {
+  margin: 0 0 6px;
+  font-family: 'Georgia', serif;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+  color: var(--color-primary);
+}
+
+.rose-layout__info .section__subtitle {
+  margin: 0 0 16px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+}
+
+.rose-layout__info .section__text {
+  max-width: 82ch;
+  margin: 0 0 24px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: 0.1px;
+  color: var(--color-text);
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  orphans: 3;
+  widows: 3;
+}
+
+/* --- ХАРАКТЕРИСТИКИ (таблица) --- */
+.rose-specs {
+  margin: 4px 0 8px;
+  padding: 24px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.rose-specs h3 {
+  margin: 0 0 14px;
+  font-family: 'Georgia', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--color-primary);
+}
+
+.rose-specs ul { list-style: none; padding: 0; margin: 0; }
+
+.rose-specs li {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 14px 0;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rose-specs li:last-child { border-bottom: none; }
+
+.rose-specs li strong {
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--color-primary);
+}
+
+.rose-specs li span {
+  max-width: none;
+  color: var(--color-text);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* --- ЗАГОЛОВОК И КНОПКИ --- */
+.rose-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.rose-title-block { flex: 1 1 300px; }
+
+.rose-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.rose-actions .btn {
+  padding: 10px 20px;
+  min-width: auto;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.rose-actions .btn--outline {
   background: transparent;
   border: 1px solid var(--color-primary);
   color: var(--color-primary);
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  margin-top: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
+  box-shadow: none;
 }
 
-.btn-review:hover {
+.rose-actions .btn--outline:hover {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-bg-card);
+}
+
+/* ---------- 6. ОПИСАНИЕ ---------- */
+.rose-description-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rose-description-box p {
+  font-size: 1.1rem; /* Чуть крупнее стандартного 1rem */
+  line-height: 1.7; /* Высокий интерлиньяж для легкости чтения */
+  color: var(--color-text);
+  margin-bottom: 24px;
+  max-width: 600px; /* ВАЖНО: Ограничиваем ширину текстового блока, чтобы он не растягивался на весь экран и не становился нечитаемым */
+}
+
+.rose-description-box p:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   7. ТЁМНАЯ ТЕМА — все overrides для страницы сорта
+   Собраны в одном месте. Порядок от общего к частному.
+   ============================================================ */
+
+/* --- Общий текст описания --- */
+html[data-theme="dark"] .rose-layout__info .section__text,
+html[data-theme="dark"] .rose-description-box p,
+html[data-theme="dark"] .rose-intro p {
+  color: var(--color-text-muted);
+  opacity: 0.92;
+}
+
+/* --- Заголовок и подзаголовок --- */
+html[data-theme="dark"] .rose-layout__info .section__title {
+  color: var(--color-primary);
+  opacity: 0.95;
+}
+
+html[data-theme="dark"] .rose-layout__info .section__subtitle {
+  color: var(--color-secondary);
+  opacity: 0.9;
+}
+
+/* --- Карточка характеристик --- */
+html[data-theme="dark"] .rose-specs {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .rose-specs h3 {
+  color: var(--color-primary);
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+html[data-theme="dark"] .rose-specs li {
+  border-bottom-color: var(--color-border);
+}
+
+html[data-theme="dark"] .rose-specs li strong {
+  color: var(--color-primary);
+  opacity: 1;
+  font-weight: 500;
+  background: rgba(230, 136, 154, 0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+html[data-theme="dark"] .rose-specs li span {
+  color: var(--color-text-soft, var(--color-text-muted));
+  opacity: 1;
+}
+
+/* --- Кнопки в шапке сорта --- */
+html[data-theme="dark"] .rose-actions .btn {
+  background: #8b3a52;              /* глубокий винный */
+  color: #f5e6e6;                   /* кремовый */
+  border-color: #8b3a52;
+}
+
+html[data-theme="dark"] .rose-actions .btn:hover {
+  background: #a04662;
+  border-color: #a04662;
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .rose-actions .btn--outline {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+html[data-theme="dark"] .rose-actions .btn--outline:hover {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+/* --- Текст отзывов и ответов --- */
+html[data-theme="dark"] .review-text,
+html[data-theme="dark"] .question-text,
+html[data-theme="dark"] .reply-item .reply-text,
+html[data-theme="dark"] .latest-review__text {
+  color: var(--color-text-muted);    /* #a09a95 — спокойный серо-бежевый */
+  opacity: 1;
+}
+/* Добавьте в конец файла */
+html[data-theme="dark"] .user-name {
+  color: var(--color-text-soft);     /* #c9c2bc — между основным и muted */
+  opacity: 0.95;
+}
+/* В тёмной теме иконка — солнышко (можно через JS менять текст, 
+   а можно просто оставить 🌙, если лень) */
+html[data-theme="dark"] .theme-toggle__icon::before {
+  content: "☀️";
+}
+html[data-theme="dark"] .theme-toggle__icon {
+  font-size: 0; /* прячем исходный 🌙 */
+}
+html[data-theme="dark"] .theme-toggle__icon::before {
+  font-size: 18px; /* показываем ☀️ */
+}
+html[data-theme="dark"] .ask-form-card input[type="text"],
+html[data-theme="dark"] .ask-form-card textarea,
+html[data-theme="dark"] .review-form input[type="text"],
+html[data-theme="dark"] .review-form textarea {
+  background: rgba(255, 255, 255, 0.04);   /* едва заметный светлый слой */
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .ask-form-card input[type="text"]:focus,
+html[data-theme="dark"] .ask-form-card textarea:focus,
+html[data-theme="dark"] .review-form input[type="text"]:focus,
+html[data-theme="dark"] .review-form textarea:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent-green);
+}
+html[data-theme="dark"] .ask-form-card p,
+html[data-theme="dark"] .info-card p {
+  color: var(--color-text-muted);
+  opacity: 0.85;
+}
+
+html[data-theme="dark"] .rose-specs li span {
+  color: var(--color-text-soft);
+  opacity: 1;
+}
+html[data-theme="dark"] .rose-specs li strong {
+  color: var(--color-primary);
+  opacity: 1;
+  background: rgba(230, 136, 154, 0.08);   /* лёгкий розовый фон */
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* ============================================================
+   КНОПКА «В ИЗБРАННОЕ» В ТЁМНОЙ ТЕМЕ
+   ============================================================ */
+
+html[data-theme="dark"] .rose-actions .btn,
+html[data-theme="dark"] .card__fav-btn.active,
+html[data-theme="dark"] .fav-card__remove {
+  background: #8b3a52;              /* глубокий винный вместо светло-розового */
+  border-color: #8b3a52;
+  color: #f5e6e6;                   /* тёплый кремовый вместо чистого белого */
+}
+
+html[data-theme="dark"] .rose-actions .btn:hover,
+html[data-theme="dark"] .card__fav-btn.active:hover {
+  background: #a04662;
+  border-color: #a04662;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Обычная кнопка «В избранное» (когда НЕ активна) */
+html[data-theme="dark"] .card__fav-btn:not(.active) {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+html[data-theme="dark"] .card__fav-btn:not(.active):hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ============================================================
+   ОПИСАНИЕ СОРТА В ТЁМНОЙ ТЕМЕ
+   ============================================================ */
+
+html[data-theme="dark"] .rose-layout__info .section__text,
+html[data-theme="dark"] .rose-description-box p,
+html[data-theme="dark"] .rose-intro p {
+  color: var(--color-text-muted);      /* #a09a95 — спокойный серо-бежевый */
+  opacity: 0.95;
+}
+
+/* Если хочется мягче — ещё на 10% */
+html[data-theme="dark"] .rose-layout__info .section__text {
+  opacity: 0.9;
+}
+
+/* ============================================================
+   СТРАНИЦА СОРТА В ТЁМНОЙ ТЕМЕ
+   Приглушаем акценты и текст, чтобы не «выжигали» глаза
+   ============================================================ */
+
+/* --- Карточка характеристик --- */
+html[data-theme="dark"] .rose-specs {
+  background: var(--color-bg-card);        /* #241f1c — тёмный, но не чёрный */
+  border-color: var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .rose-specs h3 {
+  color: var(--color-primary);
+  opacity: 0.85;                            /* приглушаем заголовок */
+  font-weight: 500;
+}
+
+/* --- Строки: ярлык и значение --- */
+html[data-theme="dark"] .rose-specs li {
+  border-bottom-color: var(--color-border); /* разделитель становится нейтральным */
+}
+
+/* --- Заголовок сорта и подзаголовок --- */
+html[data-theme="dark"] .rose-layout__info .section__title {
+  color: var(--color-primary);
+  opacity: 0.95;
+}
+
+html[data-theme="dark"] .rose-layout__info .section__subtitle {
+  color: var(--color-secondary);
+  opacity: 0.9;
+}
+
+/* --- Описание сорта --- */
+html[data-theme="dark"] .rose-layout__info .section__text {
+  color: var(--color-text);
+  opacity: 0.85;                            /* основной текст — на 15% мягче */
+}
+
+/* ============================================================
+   СТРАНИЦА СОРТА — АДАПТАЦИЯ ПОД ТЁМНУЮ ТЕМУ
+   ============================================================ */
+
+/* --- Точки-индикаторы слайдера --- */
+html[data-theme="dark"] .rose-slider__dot {
+  background: rgba(255, 255, 255, 0.25);
+}
+html[data-theme="dark"] .rose-slider__dot--active {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================================================
+   ЗАГОЛОВКИ В ФОРМАХ (вопрос / отзыв)
+   На тёмном фоне приглушаем, чтобы не «кричали»
+   ============================================================ */
+
+.ask-form-card h3,
+.review-form h4,
+.info-card h4 {
+  color: var(--color-text);
+  font-weight: 500;              /* было 600–700 — снижаем «громкость» */
+  letter-spacing: 0.1px;
+}
+
+/* На тёмной теме — ещё мягче: используем приглушённый цвет */
+html[data-theme="dark"] .ask-form-card h3,
+html[data-theme="dark"] .review-form h4,
+html[data-theme="dark"] .info-card h4 {
+  color: var(--color-text-muted);  /* серо-бежевый вместо белого */
+  font-weight: 500;
+  background: var(--color-bg-card);
+}
+
+/* ============================================================
+   8. СТРАНИЦА СОРТА — АДАПТИВ
+   ============================================================ */
+/* Базово: десктоп */
+.rose-layout {
+  grid-template-columns: 640px 1fr;
+} 
+/* Планшет */
+@media (max-width: 1100px) {
+  .rose-layout {
+    grid-template-columns: 440px 1fr;
+    gap: 32px;
+    min-height: auto;
+    padding: 24px 32px 40px;
+  }
+  .rose-layout__slider .hero-slider-container {
+    min-height: 350px;
+    max-height: 70vh;
+  }
+  .rose-layout__info .section__title { font-size: 2.2rem; }
+}
+/* Узкий планшет / большой телефон */
+@media (max-width: 820px) {
+  .rose-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 16px 20px 32px;
+    min-height: auto;
+  }
+  .rose-layout__slider .hero-wrapper { 
+    max-width: 480px; 
+    margin: 0 auto; 
+  }
+  .rose-layout__slider .hero-slider-container {
+    min-height: 280px;
+    max-height: 60vh;
+    border-radius: 12px;
+  }
+  .rose-layout__info .section__title { font-size: 2rem; }
+
+  .rose-specs li {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 10px 0;
+  }
+  .rose-specs li span { text-align: left; }
+
+  .rose-actions { flex-direction: column; }
+  .rose-actions .btn { width: 100%; }
+}
+/* Телефон */
+@media (max-width: 480px) {
+  .rose-layout { 
+    padding: 12px 12px 24px; gap: 20px;
+    grid-template-columns: 1fr; 
+  }
+  .rose-layout__slider .hero-wrapper { 
+    max-width: 100%; 
+  }
+  .rose-layout__slider .hero-slider-container {
+    min-height: 220px;
+    max-height: 50vh;
+    border-radius: 8px;
+  }
+  .rose-layout__info .section__title { 
+    font-size: 1.6rem; 
+  }
+  .rose-specs { 
+    padding: 14px 12px; 
+  }
+  .rose-specs li { 
+    font-size: 0.9rem; 
+    padding: 10px 0; 
+    gap: 2px; 
+  }
+  .rose-actions .btn { 
+    padding: 12px 20px; 
+    font-size: 0.9rem; 
+  }
+}
+/* Слайдер — фиксированные высоты */
+@media (max-width: 768px) {
+  .hero-slider-container,
+  .rose-slider__slide,
+  .rose-layout__slider .hero-slider-container,
+  .rose-layout__slider .rose-slider__slide {
+    height: 400px;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-slider-container,
+  .rose-slider__slide,
+  .rose-layout__slider .hero-slider-container,
+  .rose-layout__slider .rose-slider__slide {
+    height: 300px;
+    min-height: 300px;
+  }
+}
+
+/* ============================================================
+   ПОЛЯ ФОРМ В РАЗДЕЛЕ ОТЗЫВОВ И ВОПРОСОВ
+   Покрывает input[type=text] и textarea — чтобы не было
+   «белых дырок» на тёмном фоне
+   ============================================================ */
+
+.ask-form-card input[type="text"],
+.ask-form-card textarea,
+.review-form input[type="text"],
+.review-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  background: var(--color-bg-card);   /* ← тёмный фон в тёмной теме */
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+              background-color 0.3s ease, color 0.3s ease;
+}
+
+.ask-form-card input[type="text"]::placeholder,
+.ask-form-card textarea::placeholder,
+.review-form input[type="text"]::placeholder,
+.review-form textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.ask-form-card input[type="text"]:focus,
+.ask-form-card textarea:focus,
+.review-form input[type="text"]:focus,
+.review-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 4px rgba(143, 191, 156, 0.15);
+}
+
+/* ============================================================
+   КАРТОЧКА РЕЙТИНГА — приглушение для тёмной темы
+   ============================================================ */
+
+/* --- Звёзды: убираем свечение и пульсацию --- */
+html[data-theme="dark"] .big-stars {
+  color: var(--color-star-empty);                   /* приглушённый золотой вместо #ffb400 */
+}
+
+html[data-theme="dark"] .big-stars::before {
+  color: var(--color-star);                     /* тот же тон для залитой части */
+  text-shadow: none;                  /* убираем ореол 12px */
+  filter: none;                       /* убираем свечение drop-shadow */
+  animation: none;                    /* отключаем пульсацию */
+}
+
+/* --- Цифра «4.6 из 5 · 9 отзывов» --- */
+html[data-theme="dark"] .big-score {
+  color: var(--color-text-soft);      /* #c9c2bc вместо #ece6e2 */
+  opacity: 0.9;
+}
+
+/* --- Строки распределения (5 звёзд, 4 звезды…) --- */
+html[data-theme="dark"] .rating-bar-row {
+  color: var(--color-text-muted);
+  opacity: 0.85;
+}
+
+/* --- Счётчики справа (7, 1, 0, 1, 0) --- */
+html[data-theme="dark"] .bar-count {
+  color: var(--color-text-muted);
+  opacity: 0.75;                      /* тише остальных */
+  font-weight: 500;
+}
+
+/* --- Полосы: чуть темнее фон, чтобы золотая заливка не «резала» глаз --- */
+html[data-theme="dark"] .bar-track {
+  background: #2e2825;                /* темнее, чем --color-border */
+}
+
+html[data-theme="dark"] .bar-fill {
+  background: linear-gradient(90deg, #a87b2a, #8f6a24);  /* приглушённый градиент */
 }
 
 /* =========================================================
@@ -2445,8 +3742,8 @@ background: rgba(255,255,255,0.3) !important;
 .stars-visual {
   --rating: 0;
   --star-size: 17px;
-  --star-color: #f5b301;
-  --star-empty: #ececec;
+  --star-color: var(--color-star);
+  --star-empty: var(--color-star-empty);
 
   display: inline-block;
   position: relative;
@@ -2504,7 +3801,7 @@ background: rgba(255,255,255,0.3) !important;
 }
 .card:hover .rating-count {
   background: #ecdfe4;
-  color: #b72e4a;
+  color: var(--color-primary);
 }
 
 /* === Страница избранного === */
@@ -2787,37 +4084,27 @@ background: rgba(255,255,255,0.3) !important;
 
 @media (max-width: 768px) {
   .hero { height: 420px; }
-  .cards-grid, .fav-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-  .rose-info-grid { grid-template-columns: 1fr; }
-  .catalog__controls { flex-direction: column; align-items: stretch; }
-  .filter-buttons { justify-content: center; }
+  .cards-grid, .fav-grid { 
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+  }
+  .rose-info-grid { 
+    grid-template-columns: 1fr; 
+  }
+  .catalog__controls { 
+    flex-direction: column; 
+    align-items: stretch; 
+  }
+  .filter-buttons { 
+    justify-content: center; 
+  }
 }
 
 @media (max-width: 480px) {
-  .section__title { font-size: 1.6rem; }
-  .nav__links { flex-direction: column; }
-}
-
-/* Принудительно увеличиваем слайдер */
-.rose-layout {
-  grid-template-columns: 600px 1fr !important;
-  max-width: 1400px !important;
-}
-
-.rose-layout__slider .hero-slider-container {
-  max-width: 600px !important;
-  min-height: 800px !important;
-  max-height: none !important;
-}
-
-/* Отключаем проблемные media queries */
-@media (max-width: 1100px) {
-  .rose-layout {
-    grid-template-columns: 500px 1fr !important;
+  .section__title { 
+    font-size: 1.6rem; 
   }
-  .rose-layout__slider .hero-slider-container {
-    max-width: 500px !important;
-    min-height: 650px !important;
+  .nav__links { 
+    flex-direction: column; 
   }
 }
 
@@ -2888,7 +4175,7 @@ background: rgba(255,255,255,0.3) !important;
   padding: 3px 8px;
   border-radius: 100px;
   background: #fdf2f5;
-  color: #b72e4a;
+  color: var(--color-primary);
   font-size: 0.78rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -2922,7 +4209,7 @@ background: rgba(255,255,255,0.3) !important;
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.5;
-  color: #2b2b2b;
+  color: var(--color-text);
 
   display: -webkit-box;
   -webkit-line-clamp: 3;                 /* максимум 3 строки */
@@ -3001,7 +4288,10 @@ background: rgba(255,255,255,0.3) !important;
   }
 }
 
-/* === Голосование «полезно / не полезно» === */
+/* ============================================================
+   ГОЛОСОВАНИЕ «ПОЛЕЗНО / НЕ ПОЛЕЗНО» — через переменные
+   ============================================================ */
+
 .answer-feedback {
   display: flex;
   flex-wrap: wrap;
@@ -3009,13 +4299,13 @@ background: rgba(255,255,255,0.3) !important;
   gap: 10px;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #f0ecea;
+  border-top: 1px solid var(--color-border);   /* было #f0ecea */
   font-family: 'Segoe UI', sans-serif;
 }
 
 .answer-feedback__title {
   font-size: 12px;
-  color: #8a8a8a;
+  color: var(--color-text-muted);              /* было #8a8a8a */
   letter-spacing: 0.2px;
   margin-right: 4px;
 }
@@ -3025,16 +4315,17 @@ background: rgba(255,255,255,0.3) !important;
   gap: 8px;
 }
 
+/* --- Кнопка «Полезно?» / «Нет» --- */
 .feedback-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   height: 32px;
   padding: 0 12px 0 10px;
-  border: 1px solid #e6e3e1;
+  border: 1px solid var(--color-border);        /* было #e6e3e1 */
   border-radius: 999px;
-  background: #fff;
-  color: #555;
+  background: var(--color-bg);                  /* было #fff — теперь тёмный в тёмной теме */
+  color: var(--color-text-muted);               /* было #555 */
   font-size: 13px;
   line-height: 1;
   font-family: inherit;
@@ -3044,14 +4335,16 @@ background: rgba(255,255,255,0.3) !important;
 }
 
 .feedback-btn:hover {
-  background: #faf6f7;
-  border-color: #d9c7cd;
-  color: #b72e4a;
+  background: var(--color-bg-card);             /* было #faf6f7 */
+  border-color: var(--accent-green);
+  color: var(--accent-green);
 }
+
 .feedback-btn:active { transform: translateY(1px); }
+
 .feedback-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(183, 46, 74, 0.18);
+  box-shadow: 0 0 0 3px rgba(143, 191, 156, 0.25);
 }
 
 .feedback-btn__icon { font-size: 14px; line-height: 1; }
@@ -3066,78 +4359,36 @@ background: rgba(255,255,255,0.3) !important;
   padding: 0 6px;
   margin-left: 2px;
   border-radius: 999px;
-  background: #f4f1ef;
-  color: #888;
+  background: var(--color-border);              /* было #f4f1ef */
+  color: var(--color-text-muted);               /* было #888 */
   font-size: 11px;
   font-weight: 600;
   transition: background-color .18s, color .18s;
 }
 
+/* --- Активная кнопка (пользователь нажал «Полезно») --- */
 .feedback-btn.is-active {
-  background: #fbeef1;
-  border-color: #b72e4a;
-  color: #b72e4a;
+  background: var(--accent-green);              /* заливка зелёным */
+  border-color: var(--accent-green);
+  color: var(--color-bg-card);                  /* белый текст в светлой / тёмный в тёмной */
   font-weight: 600;
 }
+
 .feedback-btn.is-active .feedback-btn__count {
-  background: #b72e4a;
-  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
 }
 
-.feedback-message {
-  flex-basis: 100%;
-  min-height: 0;
-  margin-top: 2px;
-  font-size: 12px;
-  color: #7f8c8d;
-  animation: feedbackFadeIn .25s ease;
-}
-.feedback-message:empty { display: none; }
-
-@keyframes feedbackFadeIn {
-  from { opacity: 0; transform: translateY(-2px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.answer-feedback--block {
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 14px;
-  max-width: 560px;
-  margin: 32px auto;
-  padding: 24px 20px;
-  background: #fdf9f9;
-  border: 1px solid #f2e7ea;
-  border-radius: 14px;
-}
-.answer-feedback--block .answer-feedback__title {
-  font-size: 14px; 
-  color: #2c3e50; 
-  margin: 0;
-}
-.answer-feedback--block .feedback-btn { 
-  height: 36px; 
-  padding: 0 14px; 
-  ont-size: 14px; 
-}
-
-/* === Обратная связь под отзывом === */
-.review__feedback {
-  position: relative;
-  display: inline-block;
-  margin-top: 12px;
-}
-
+/* --- Триггер «Оставить отзыв о ответе» --- */
 .feedback-trigger {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  border: 1px solid #e6e3e1;
+  border: 1px solid var(--color-border);
   border-radius: 20px;
-  background: #fff;
-  color: #7f8c8d;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
@@ -3146,36 +4397,49 @@ background: rgba(255,255,255,0.3) !important;
 
 .feedback-trigger:hover,
 .feedback-trigger.is-open {
-  border-color: #b72e4a;
-  color: #b72e4a;
-  background: #fdf9f9;
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+  background: var(--color-bg-card);
 }
 
-/* Всплывающее окошко */
+/* --- Всплывающее окошко под триггером --- */
 .feedback-popup {
   position: absolute;
-  bottom: calc(100% + 8px);
+  top: calc(100% + 8px);         /* ← появляется СРАЗУ под кнопкой */
   left: 0;
   z-index: 20;
   display: none;
   flex-direction: column;
   min-width: 220px;
   padding: 6px;
-  background: #fff;
-  border: 1px solid #eee;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   animation: feedbackPop .18s ease;
 }
 
-/* Открывается при наведении на контейнер или при фокусе на кнопке */
-.review__feedback:hover .feedback-popup,
-.review__feedback:focus-within .feedback-popup {
+/* Стрелка-указатель на кнопку */
+.feedback-popup::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 20px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-bg-card);
+  border-left: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  transform: rotate(45deg);
+}
+
+/* Попап открывается по клику (класс .is-open) */
+.review__feedback.is-open .feedback-popup {
   display: flex;
 }
 
 @keyframes feedbackPop {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -3187,7 +4451,7 @@ background: rgba(255,255,255,0.3) !important;
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: #444;
+  color: var(--color-text);                     /* было #444 */
   font-size: 13px;
   font-family: inherit;
   text-align: left;
@@ -3196,25 +4460,37 @@ background: rgba(255,255,255,0.3) !important;
 }
 
 .feedback-popup__btn:hover {
-  background: #faf6f7;
-  color: #b72e4a;
+  background: var(--color-bg);
+  color: var(--accent-green);
 }
 
 .feedback-popup__btn.is-active {
-  background: #fbeef1;
-  color: #b72e4a;
+  background: var(--accent-green-light);
+  color: var(--accent-green);
   font-weight: 600;
 }
 
 .feedback-popup__count {
   margin-left: auto;
   font-size: 12px;
-  color: #999;
+  color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .feedback-popup__btn.is-active .feedback-popup__count {
-  color: #b72e4a;
+  color: var(--accent-green);
+}
+
+/* Открывается при наведении на контейнер или при фокусе на кнопке */
+.review__feedback:hover .feedback-popup,
+.review__feedback:focus-within .feedback-popup {
+  display: flex;
+}
+
+.review__feedback {
+  position: relative;      /* ← обязательно — якорь для попапа */
+  display: inline-block;   /* ← ширина = ширина кнопки, не на всю карточку */
+  margin-top: 12px;
 }
 
 /* ============================================================
@@ -3237,17 +4513,17 @@ background: rgba(255,255,255,0.3) !important;
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
-  color: #b72e4a;
-  background: #ffffff;
-  border: 1.5px solid #b72e4a;
+  color: var(--color-primary);
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-primary);
   border-radius: 100px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(183, 46, 74, 0.06);
 }
 .load-more__btn:hover {
-  background: #b72e4a;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-bg-card);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(183, 46, 74, 0.25);
 }
@@ -3265,7 +4541,7 @@ background: rgba(255,255,255,0.3) !important;
   padding: 2px 8px;
   border-radius: 100px;
   background: rgba(183, 46, 74, 0.1);
-  color: #b72e4a;
+  color: var(--color-primary);
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -3273,7 +4549,7 @@ background: rgba(255,255,255,0.3) !important;
 }
 .load-more__btn:hover .load-more__count {
   background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  color: var(--color-bg-card);
 }
 
 .load-more__info {
@@ -3281,4 +4557,35 @@ background: rgba(255,255,255,0.3) !important;
   font-size: 13px;
   color: #999;
   font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ
+   ============================================ */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  transition: all 0.25s ease;
+  margin-left: 16px;
+}
+
+.theme-toggle:hover {
+  background: var(--color-bg-card);
+  border-color: var(--color-primary);
+  transform: rotate(-15deg) scale(1.08);
+}
+
+.theme-toggle__icon {
+  display: block;
+  transition: transform 0.4s ease;
 }
