@@ -32,8 +32,8 @@ class RoseSlider {                                                              
     this.isAnimating = false;                                                   // Флаг активной анимации — защищает от наложения переходов и «дребезга».
 
     // === ПРОВЕРКА: ЕСТЬ ЛИ СЛАЙДЫ ===
-    if (this.slides.length === 0) {                                             // Если слайдов нет — показываем заглушку.
-      this.container.innerHTML = `                                              // Вставляет в контейнер HTML-заглушку с розой и текстом «Нет изображений».
+    if (this.slides.length === 0) {                                             // Если слайдов нет — показываем заглушку. Вставляет в контейнер HTML-заглушку с розой и текстом «Нет изображений».
+      this.container.innerHTML = `                                              
         <div style="display:flex;align-items:center;justify-content:center;height:100%;background:#f5f0eb;color:#999;font-family:Georgia,serif;">
           <p style="text-align:center;">🌹<br>Нет изображений</p>
         </div>

@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>О проекте — Азбука Роз</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/theme.js"></script>
+  <title>О проекте — Азбука Роз</title>  
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+    })();
+  </script><link rel="stylesheet" href="css/style.css">  
 </head>
 <body>
 
@@ -101,25 +106,25 @@
     <div class="rose-marquee__track">
       <!-- Первый набор картинок -->
       <div class="rose-marquee__set">
-        <div class="rose-marquee__item"><img src="img/photo_1.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_5.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_12.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_18.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_23.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_29.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_34.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_40.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_1.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_5.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_12.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_18.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_23.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_29.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_34.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_40.webp" alt="" loading="lazy"></div>
       </div>
       <!-- Дубликат набора — нужен для бесшовного цикла -->
       <div class="rose-marquee__set" aria-hidden="true">
-        <div class="rose-marquee__item"><img src="img/photo_1.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_5.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_12.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_18.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_23.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_29.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_34.jpg" alt="" loading="lazy"></div>
-        <div class="rose-marquee__item"><img src="img/photo_40.jpg" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_1.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_5.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_12.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_18.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_23.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_29.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_34.webp" alt="" loading="lazy"></div>
+        <div class="rose-marquee__item"><img src="img/photo_40.webp" alt="" loading="lazy"></div>
       </div>
     </div>
   </section>
@@ -164,7 +169,8 @@
         <span>Pet-project о мире роз создан с вниманием к деталям <span class="heart">♥</span></span>
       </div>
     </div>
-  </footer>  
-  <script src="js/scroll-top.js"></script>
+  </footer> 
+  <script src="js/theme.js"></script> 
+  <script src="js/scroll-top.js"></script>  
 </body>
 </html>

@@ -4,8 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Каталог — Азбука Роз</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/theme.js"></script>
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+    })();
+  </script>
+  <link rel="stylesheet" href="css/style.css">  
 </head>
 <body>
 
@@ -25,7 +31,7 @@
         <li><a href="favorites.html">Избранное</a></li>
         <li><a href="about.html">О проекте</a></li>
       </ul>
-      <!-- ✅ КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ -->
+      <!--  КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ -->
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Сменить тему">
         <span class="theme-toggle__icon">🌙</span>
       </button>
@@ -337,10 +343,12 @@
   </div>
 </footer>
 
-  <!-- ===== СКРИПТЫ ===== -->
-  <script src="js/data.js"></script>
+  <!-- ===== СКРИПТЫ ===== -->  
+  <script src="js/data-loader.js"></script>
+  <script src="js/data-logic.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/favorites.js"></script>
   <script src="js/catalog.js"></script>
-  <script src="js/scroll-top.js"></script>
+  <script src="js/scroll-top.js"></script>  
 </body>
 </html>
