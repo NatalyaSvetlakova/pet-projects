@@ -84,22 +84,23 @@ function getFavoriteRoses() {
 // --- Авто-обновление кнопок на странице при загрузке (опционально) ---
 // Если хочешь, чтобы при перезагрузке страницы кнопки сразу были «активными»,
 // можно вызвать это на нужных страницах или оставить на усмотрение page-скриптов.
-document.addEventListener('DOMContentLoaded', () => {
-  // Находим все кнопки с data-id и обновляем их состояние
-  document.querySelectorAll('.card__fav-btn[data-id]').forEach(btn => {
-    const id = btn.getAttribute('data-id');
-    if (id) {
-      updateFavoriteButton(btn, id);
-    }
+window.rosesReady.then(() => {
+  document.addEventListener('DOMContentLoaded', () => {
+    // Находим все кнопки с data-id и обновляем их состояние
+    document.querySelectorAll('.card__fav-btn[data-id]').forEach(btn => {
+      const id = btn.getAttribute('data-id');
+      if (id) {
+        updateFavoriteButton(btn, id);
+      }
+    });
   });
 });
-
 // favorites-page.js — логика страницы избранного
 // - рендерит карточки из localStorage
 // - анимация удаления
 // - пустое состояние с иллюстрацией
 
-document.addEventListener('DOMContentLoaded', () => {
+window.rosesReady.then(() => {
   const container = document.getElementById('favoritesContainer');
   if (!container) return;
 

@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Азбука Роз — сорт</title>
-  
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+    })();
+  </script>
   <!-- Общие стили -->
   <link rel="stylesheet" href="css/style.css">  
 </head>
@@ -99,7 +105,7 @@
                     <div class="reviews-list-col">
                         <div class="list-controls">
                             <span>Показать сначала:</span>
-                            <select id="reviewsSort" class="sort-select">
+                            <select id="reviewsSort" class="sort-select" aria-label="Показать сначала">
                                 <option value="date-desc">новые и полезные</option>
                                 <option value="score-desc">с высокой оценкой</option>
                                 <option value="score-asc">с низкой оценкой</option>
@@ -284,78 +290,16 @@
   </div>
 </footer>
 
-  <!-- ===== СКРИПТЫ ===== -->
-  <script src="js/data.js"></script>
+  <!-- ===== СКРИПТЫ ===== -->  
+  <script src="js/data-loader.js"></script>
+  <script src="js/data-logic.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/favorites.js"></script>  
   <script src="js/reviews.js"></script> 
   <script src="js/qna.js"></script> 
   <script src="js/slider.js"></script>
   <script src="js/rose.js"></script>
-  <script src="js/scroll-top.js"></script>
-
-  
-    <!-- ===== Синхронизация нового отзыва с объединённым рейтингом ===== -->
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const reviewForm = document.getElementById('reviewForm');
-        if (!reviewForm) return;
-
-        // capture:true — чтобы прочитать поля раньше, чем reviews.js их очистит
-        reviewForm.addEventListener('submit', () => {
-            const roseId = new URLSearchParams(location.search).get('id') || 'unknown';
-
-            const score  = Number(document.getElementById('reviewScore').value) || 0;
-            const text   = (document.getElementById('reviewText').value  || '').trim();
-            const author = (document.getElementById('reviewAuthor').value || 'Гость').trim();
-
-            // Синхронизируем только валидные отзывы (совпадает с проверкой в reviews.js)
-            if (score < 1 || text.length < 5) return;
-
-            if (window.RoseRatings && typeof RoseRatings.addUserReview === 'function') {
-                RoseRatings.addUserReview(roseId, {
-                    rating: score,
-                    text: text,
-                    author: author
-                });
-            }
-        }, true); // ← обязательно capture: true
-    });
-    </script>
-    <!-- ===== Пересчёт рейтинга на странице сорта ===== -->
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const roseId = new URLSearchParams(location.search).get('id');
-    if (!roseId || typeof roses === 'undefined') return;
-
-    const currentRose = roses.find(r => r.id === roseId);
-    if (!currentRose) return;
-
-    // Небольшая задержка: даём rose.js сначала отрисовать страницу,
-    // чтобы он не перезаписал наши значения своими.
-    setTimeout(() => {
-        if (typeof updateRoseRatingUI === 'function') {
-        updateRoseRatingUI(currentRose);
-        }
-    }, 100);
-    });
-    </script>
-    <!-- Переключение вкладок «Отзывы / Вопросы» (делегирование) -->
-    <script>
-    document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.tab-btn');
-    if (!btn) return;
-    e.preventDefault();
-
-    const targetId = btn.getAttribute('data-tab');
-    if (!targetId) return;
-
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-    btn.classList.add('active');
-    const target = document.getElementById(targetId);
-    if (target) target.classList.add('active');
-    });
-    </script> 
+  <script src="js/rose-inline.js"></script>
+  <script src="js/scroll-top.js"></script> 
 </body>
 </html>

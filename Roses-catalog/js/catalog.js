@@ -1,4 +1,4 @@
-(function () {
+window.rosesReady.then(() => {
   'use strict';
 
   console.log('📚 Загрузка каталога...');
@@ -134,7 +134,7 @@
 
   if (typeof roses !== 'undefined' && Array.isArray(roses)) {
     enrichRoses(roses);
-    console.log('✅ Данные обогащены. Пример:', roses[0].name, roses[0]._colors, roses[0]._height);
+    console.log('Данные обогащены. Пример:', roses[0].name, roses[0]._colors, roses[0]._height);
   } else {
     console.warn('⚠️ Массив roses не найден.');
   }
@@ -666,7 +666,7 @@
   renderCatalog();
   console.log('📚 Каталог загружен');
 
-})();
+});
 
 // Блокировка «протекания» скролла — ваш код, оставляем
 (function () {

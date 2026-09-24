@@ -21,41 +21,10 @@ window.escapeHtml = function(s) {
     .replace(/'/g, '&#39;');
 };
 
-// window.getHelpfulCount = function(roseId, reviewId) {
-//   const key = `helpful_${roseId}_${reviewId}`;
-//   const count = localStorage.getItem(key + '_count');
-//   return count ? parseInt(count, 10) : 0;
-// };
-
-// window.isHelpfulVoted = function(roseId, reviewId) {
-//   const key = `helpful_${roseId}_${reviewId}`;
-//   return localStorage.getItem(key + '_voted') === 'true';
-// };
-
-// window.toggleReviewHelpful = function(button, roseId, reviewId) {
-//   const key = `helpful_${roseId}_${reviewId}`;
-//   const countSpan = button.querySelector('.helpful-count');
-//   let count = parseInt(countSpan.textContent, 10) || 0;
-//   const isVoted = localStorage.getItem(key + '_voted') === 'true';
-
-//   if (isVoted) {
-//     count = Math.max(0, count - 1);
-//     button.classList.remove('active');
-//     localStorage.setItem(key + '_voted', 'false');
-//   } else {
-//     count += 1;
-//     button.classList.add('active');
-//     localStorage.setItem(key + '_voted', 'true');
-//   }
-
-//   countSpan.textContent = count;
-//   localStorage.setItem(key + '_count', count);
-// };
-
 // ============================================
 // ОСНОВНАЯ ЛОГИКА СТРАНИЦЫ
 // ============================================
-(function() {
+window.rosesReady.then(() => {
   'use strict';
 
   console.log('🌹 Загрузка страницы сорта...');
@@ -80,12 +49,7 @@ window.escapeHtml = function(s) {
     showError('Сорт не найден', 'Не указан ID сорта');
     return;
   }
-
-  if (typeof roses === 'undefined') {
-    showError('Ошибка загрузки данных', 'Проверьте подключение data.js');
-    return;
-  }
-
+  
   const rose = roses.find(r => r.id === roseId);
   console.log('🌹 Найденный сорт:', rose);
 
@@ -122,10 +86,8 @@ window.escapeHtml = function(s) {
   if (sliderContainer) {
     const hasImages = rose.images && rose.images.length > 0;
     if (hasImages) {
-      const slides = rose.images.map((img, index) => ({
+      const slides = rose.images.map(img => ({
         image: img,
-        title: index === 0 ? rose.name : null,
-        subtitle: index === 0 ? rose.color : null,
         link: null
       }));
       try {
@@ -181,7 +143,7 @@ window.escapeHtml = function(s) {
   }
 
   console.log('✅ Страница сорта загружена');
-})();
+});
 
 // ============================================
 // ЛОГИКА ОТЗЫВОВ
@@ -485,7 +447,7 @@ function initQuestions(rose) {
 
         const likeButtonHtml = `
           <button class="helpful-btn ${isLiked ? 'active' : ''}"
-                  onclick="handleQuestionLike(this, '${rose.id}', ${q.id})">
+                  onclick="handleQuestionLike(this, &quot;${rose.id}&quot;, ${q.id})"
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
             </svg>
@@ -519,7 +481,7 @@ function initQuestions(rose) {
               </button>
             </div>
 
-            <form class="reply-form" onsubmit="handleReplySubmit(event, this, '${rose.id}', ${q.id})">
+            <form class="reply-form" onsubmit="handleReplySubmit(event, this, &quot;${rose.id}&quot;, ${q.id})">
               <input type="text" class="reply-author-input" placeholder="Ваше имя" style="width:100%; padding:8px 12px; margin-bottom:8px; border:1px solid #eaeaea; border-radius:8px; box-sizing:border-box;">
               <textarea placeholder="Напишите ваш ответ..." required></textarea>
               <button type="submit" class="submit-btn">Отправить</button>
@@ -669,8 +631,6 @@ function setFeedbackVote(roseId, reviewId, choice) {
 
   return state;
 }
-
-
 
 // // ============================================
 // // ROSE.JS — ЛОГИКА СТРАНИЦЫ СОРТА

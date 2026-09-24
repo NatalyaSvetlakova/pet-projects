@@ -3,7 +3,7 @@
    Читает пользовательские отзывы из localStorage (reviews.js)
    ========================================================= */
 
-(function () {
+window.rosesReady.then(() => {
   console.log('💬 home-reviews.js: загрузка последних отзывов...');
 
   const container = document.getElementById('latestReviews');
@@ -171,4 +171,4 @@
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
-})();
+});

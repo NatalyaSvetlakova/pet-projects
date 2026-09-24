@@ -4,8 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Азбука Роз — каталог сортов роз</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/theme.js"></script>
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+    })();
+  </script>
+  <link rel="stylesheet" href="css/style.css">  
 </head>
 <body>
 
@@ -115,44 +121,15 @@
     </div>
 
   </div>
-</footer>
-
-  <script src="js/data.js"></script>
+</footer>  
+  <script src="js/data-loader.js"></script>
+  <script src="js/data-logic.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/favorites.js"></script> 
   <script src="js/reviews.js"></script>  
   <script src="js/slider.js"></script>
   <script src="js/home.js"></script>
   <script src="js/home-reviews.js"></script>
-  <script src="js/scroll-top.js"></script>
-  
-  <script>
-    // === СЛАЙДЕР НА ГЛАВНОЙ ===
-    (function() {
-      const container = document.querySelector('#hero-slider');
-      if (!container) return;
-
-      const topRoses = [...roses]
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 20)
-        .map((rose) => ({
-          image: rose.images && rose.images[0] ? rose.images[0] : null,
-          title: rose.name,
-          subtitle: rose.color,
-          link: `rose.html?id=${rose.id}`
-        }));
-
-      new RoseSlider({
-        container: "#hero-slider",
-        slides: topRoses,
-        autoplay: true,
-        interval: 5000,
-        showDots: true,
-        showArrows: true,
-        keyboard: true,
-        pauseOnHover: true,
-        loop: true
-      });
-    })();
-  </script>
+  <script src="js/scroll-top.js"></script> 
 </body>
 </html>

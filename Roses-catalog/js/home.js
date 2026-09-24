@@ -69,7 +69,7 @@ function getImageSrc(rose) {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
+window.rosesReady.then(() => {
 
 // Объединённый рейтинг (base из data.js + отзывы пользователя)
 // function getMerged(rose) {
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sliderData = roses
     .slice()
     .sort((a, b) => getMerged(b).avg - getMerged(a).avg)
-    .slice(0, 50)
+    .slice(0, 75)
     .map(rose => ({
       image: getImageSrc(rose),
       title: rose.name,
