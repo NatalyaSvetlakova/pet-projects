@@ -231,6 +231,8 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 .nav__toggle {
+  min-width: 48px;
+  min-height: 48px;
   display: none;
   font-size: 1.3rem;
   padding: 4px 8px;
@@ -251,6 +253,35 @@ ul { list-style: none; padding: 0; margin: 0; }
   }
   .nav__links.open { transform: translateY(0); }
   .nav__toggle { display: block; }
+}
+
+/* ============================================================
+   ШАПКА САЙТА В ТЁМНОЙ ТЕМЕ
+   ============================================================ */
+
+/* 1. Фон под эмодзи-розой: убираем белый круг */
+html[data-theme="dark"] .nav__logo-mark {
+  /* Тёмный градиент с лёгким розовым отливом */
+  background: linear-gradient(135deg, #2e2226 0%, #1f1619 100%);
+  /* Тёмная тень вместо розовой */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Убираем розовую тень при наведении на логотип */
+html[data-theme="dark"] .nav__logo:hover .nav__logo-mark {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+/* 2. Ссылки в навигации: делаем их мягкими, а не ярко-белыми */
+html[data-theme="dark"] .nav__links a {
+  /* Используем переменную --color-text-soft (#c9c2bc) */
+  color: var(--color-text-soft); 
+}
+
+/* Активная и hovered ссылки остаются розовыми (как и было) */
+html[data-theme="dark"] .nav__links a:hover,
+html[data-theme="dark"] .nav__links a.active {
+  color: var(--color-primary);
 }
 
 /* === Типографика и секции (общий блок для всех страниц) === */
@@ -329,22 +360,57 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ===== СЕТКА КАРТОЧЕК ===== */
+/* ============================================================
+   СЕТКА КАРТОЧЕК НА ГЛАВНОЙ — СТРОГО 3 В РЯД
+   ============================================================ */
+
+/* 1. Заставляем сетку показывать ровно 3 колонки на десктопе */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* 3 равные колонки */
   gap: 24px;
-  margin: 0;         /* ← убираем лишние отступы */
+  margin: 0;
 }
 
-/* Появление карточек при фильтрации */
-@keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* 2. Налаживаем подвал карточки, чтобы кнопка не сжималась */
+.card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px; /* Добавляем отступ между рейтингом и кнопкой */
+  flex-wrap: wrap; /* Разрешаем перенос, если места совсем мало */
 }
 
-.cards-grid .card {
-  animation: cardFadeIn .35s ease both;
+/* 3. Делаем кнопку «В избранное» чуть компактнее, но читаемой */
+.card__fav-btn {
+  padding: 8px 14px;      /* Чуть уменьшаем отступы */
+  font-size: 0.85rem;     /* Немного уменьшаем шрифт */
+  white-space: nowrap;    /* Запрещаем перенос текста внутри кнопки */
+  flex-shrink: 0;         /* Запрещаем кнопке сжиматься */
+}
+
+/* ============================================================
+   АДАПТИВ ДЛЯ СЕТКИ КАРТОЧЕК
+   ============================================================ */
+
+/* На планшетах (меньше 992px) — 2 карточки в ряд */
+@media (max-width: 992px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* На мобильных (меньше 600px) — 1 карточка в ряд */
+@media (max-width: 600px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Возвращаем обычные размеры кнопки на мобильных, чтобы было удобно нажимать */
+  .card__fav-btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
 }
 
 /* ===== СЛАЙДЕР НА ГЛАВНОЙ ===== */
@@ -416,11 +482,11 @@ html {
 
 /* Стрелки */
 .hero-slider-container .rose-slider__arrow {
-  background: rgba(255,255,255,0.15) !important;
+  background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
   /* border: 1px solid rgba(255,255,255,0.2) !important; */
   border: none !important; /* ← убрала границу, чтобы не «резало» глаз */
-  color: #fff !important;
+  color: #fff ;
   width: 40px !important; /* ← уменьшили с 50px до 40px */
   /* width: 50px !important; */
   height: 50px !important;
@@ -429,7 +495,7 @@ html {
 }
 
 .hero-slider-container .rose-slider__arrow:hover {
-background: rgba(255,255,255,0.3) !important;
+background: rgba(255,255,255,0.3);
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -594,6 +660,7 @@ background: rgba(255,255,255,0.3) !important;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  display: none !important;
 }
 
 .card__footer {
@@ -1207,6 +1274,141 @@ background: rgba(255,255,255,0.3) !important;
   border-radius: 3px;
 }
 .catalog-sidebar::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+/* ============================================================
+   КАТАЛОГ В ТЁМНОЙ ТЕМЕ — переопределения
+   ============================================================ */
+
+html[data-theme="dark"] .filters-panel {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme="dark"] .filters-panel__header {
+  background: var(--color-bg-card);
+  border-bottom-color: var(--color-border);
+}
+
+html[data-theme="dark"] .filters-panel__title {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .filters-panel__reset {
+  color: var(--color-primary);
+}
+
+html[data-theme="dark"] .filter-group {
+  border-top-color: var(--color-border);
+}
+
+html[data-theme="dark"] .filter-group__title {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .filter-group__title .arrow {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .checkbox {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .checkbox:hover {
+  background: var(--color-bg);
+}
+
+html[data-theme="dark"] .checkbox input {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"] .range-row input[type="range"] {
+  background: var(--color-border);
+}
+
+html[data-theme="dark"] .range-values {
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .search-box,
+html[data-theme="dark"] .sort-select {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"] .catalog__controls {
+  background: var(--color-bg);
+}
+
+html[data-theme="dark"] .catalog__controls.is-stuck {
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-lg);
+}
+
+html[data-theme="dark"] .mobile-filter-toggle {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+/* Кнопки категорий (Флорибунда, Шрабы и т.д.) */
+html[data-theme="dark"] .filter-btn {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"] .filter-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+html[data-theme="dark"] .filter-btn.active {
+  background: var(--color-primary);
+  color: var(--color-bg);
+  border-color: var(--color-primary);
+}
+
+/* Описание категории */
+html[data-theme="dark"] .category-description {
+  background: var(--accent-green-light);
+  color: var(--color-text-soft);
+  border-left-color: var(--accent-green);
+}
+
+/* Активные фильтры-чипы */
+html[data-theme="dark"] .active-filters {
+  border-bottom-color: var(--color-border);
+}
+
+html[data-theme="dark"] .active-filter-chip {
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  color: var(--color-primary);
+}
+
+html[data-theme="dark"] .active-filter-chip__remove {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .active-filters__clear {
+  color: var(--color-text-muted);
+}
+
+/* Мобильный сайдбар */
+@media (max-width: 900px) {
+  html[data-theme="dark"] .catalog-sidebar {
+    background: var(--color-bg-card);
+  }
+}
+
+/* Скроллбар сайдбара */
+html[data-theme="dark"] .catalog-sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
 
 /* --- КОНТЕНТ --- */
 .catalog-content {
@@ -1878,16 +2080,29 @@ background: rgba(255,255,255,0.3) !important;
   flex-shrink: 0;
 }
 
+/* 1. Карточки-рамки: светлый паспарту с золотистой нитью */
 .rose-marquee__item {
   flex-shrink: 0;
   width: 200px;
   height: 260px;
-  border-radius: 16px;
+  /* Мягкий тёплый светлый фон — как бумага в дорогой раме */
+  background: rgba(255, 252, 245, 0.6);
+  
+  /* Тонкая полупрозрачная золотистая рамка */
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  
+  /* Внутренний отступ — эффект паспарту, как в тёмной теме */
+  padding: 8px;
+  
+  /* Скругление как в тёмной теме */
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(90, 60, 70, 0.06);
-  transition:
-    transform .5s cubic-bezier(.22, 1, .36, 1),
-    box-shadow .5s ease;
+  position: relative;
+  
+  /* Мягкая тень + едва заметное тёплое свечение */
+  box-shadow: 0 10px 30px rgba(183, 46, 74, 0.06);
+  
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .rose-marquee__item:hover {
@@ -1895,19 +2110,49 @@ background: rgba(255,255,255,0.3) !important;
   box-shadow: 0 12px 28px rgba(90, 60, 70, 0.14);
 }
 
+/* 2. Сами фотографии: скругление под рамку + сочность */
 .rose-marquee__item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 12px; /* Внутренний радиус, совпадает с тёмной темой */
+  filter: saturate(1.08) contrast(1.03) brightness(1); /* Ярко и сочно */
+  transition: all 0.4s ease;
+}
 
-  /* Приглушаем картинки — сдержанность = премиум */
-  filter: saturate(0.85) contrast(1.02);
-  transition: filter .5s ease;
+/* 3. Магия при наведении: рамка вспыхивает золотом, фото увеличивается */
+.rose-marquee__item:hover {
+  background: rgba(255, 250, 235, 0.85);
+  border-color: rgba(212, 175, 55, 0.85); /* Яркая золотая нить */
+  transform: translateY(-10px) scale(1.03);
+  
+  /* Усиленное свечение: внешнее и внутреннее, тёплое */
+  box-shadow: 
+    0 20px 40px rgba(183, 140, 60, 0.25),
+    0 0 30px rgba(212, 175, 55, 0.35),
+    inset 0 0 20px rgba(212, 175, 55, 0.1); /* Внутренний свет */
+  z-index: 10;
 }
 
 .rose-marquee__item:hover img {
-  filter: saturate(1.05) contrast(1.05);
+  filter: saturate(1.15) contrast(1.05) brightness(1.02);
+}
+
+/* 4. Нежная виньетка при наведении — фокус на центре розы */
+.rose-marquee__item::after {
+  content: '';
+  position: absolute;
+  inset: 8px; /* Внутри рамки, как в тёмной теме */
+  border-radius: 12px;
+  background: radial-gradient(circle at center, transparent 55%, rgba(120, 80, 0, 0.08) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.rose-marquee__item:hover::after {
+  opacity: 1;
 }
 
 /* Анимация: сдвигаем ровно на половину — два набора одинаковых */
@@ -1932,9 +2177,6 @@ background: rgba(255,255,255,0.3) !important;
   .rose-marquee__set { gap: 14px; padding-right: 14px; }
   .rose-marquee__item { width: 140px; height: 180px; border-radius: 12px; }
 }
-
-
-/* === Footer (на всех страницах) === */
 
 /* ============================================================
    FOOTER — общий для всех страниц, адаптивный к теме
@@ -2087,6 +2329,127 @@ background: rgba(255,255,255,0.3) !important;
 }
 
 /* ============================================================
+   СТРАНИЦА О ПРОЕКТЕ (about.html) В ТЁМНОЙ ТЕМЕ
+   ============================================================ */
+
+/* Вводный текст под заголовком */
+html[data-theme="dark"] .about-hero__lead {
+  color: var(--color-text-muted);
+}
+
+/* Подписи под цифрами статистики */
+html[data-theme="dark"] .about-stat small {
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+
+/* Карточки «Цель проекта», «Технологии» и т.д. */
+html[data-theme="dark"] .about-card {
+  background: var(--color-bg-card);       /* тёмный фон вместо #fff */
+  border-color: var(--color-border);      /* приглушённая рамка */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* мягкая тень */
+}
+
+html[data-theme="dark"] .about-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+/* Текст внутри карточек */
+html[data-theme="dark"] .about-card p {
+  color: var(--color-text-muted);         /* серо-бежевый вместо #555 */
+}
+
+/* Текст перед кнопкой «Открыть каталог» */
+html[data-theme="dark"] .about-cta p {
+  color: var(--color-text-soft);          /* светлый текст вместо #333 */
+}
+
+/* Плавный переход для карточек */
+.about-card {
+  transition: transform .3s ease, box-shadow .3s ease, 
+              background-color .3s ease, border-color .3s ease;
+}
+
+/* ============================================================
+   БЕГУЩАЯ СТРОКА (rose-marquee) В ТЁМНОЙ ТЕМЕ 
+   Стиль: Светящаяся стеклянная галерея
+   ============================================================ */
+
+/* 1. Фон-«софит»: создаём эффект мягкого света, падающего на витрину */
+html[data-theme="dark"] .rose-marquee {
+  /* Радиальный градиент создаёт мягкое световое пятно в центре */
+  background: radial-gradient(circle at center, rgba(230, 136, 154, 0.08) 0%, var(--color-bg) 70%);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 60px 0;
+}
+
+/* 2. Карточки-рамки: делаем их «стеклянными» и светлыми */
+html[data-theme="dark"] .rose-marquee__item {
+  /* Полупрозрачный светлый фон (эффект матового стекла) */
+  background: rgba(255, 255, 255, 0.04);
+  
+  /* Светлая, почти прозрачная рамка */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  
+  /* Внутренние отступы, чтобы фото выглядело как в паспарту */
+  padding: 8px;
+  
+  /* Мягкая тень + едва заметное розовое свечение */
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(230, 136, 154, 0.1);
+    
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  
+  /* Плавные анимации */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 3. Сами фотографии: возвращаем им сочность */
+html[data-theme="dark"] .rose-marquee__item img {
+  border-radius: 12px; /* Внутренний радиус, чтобы совпадал с рамкой */
+  filter: saturate(1.1) contrast(1.05) brightness(1); /* Ярко и сочно */
+  transition: all 0.4s ease;
+}
+
+/* 4. Магия при наведении: рамка вспыхивает, фото увеличивается */
+html[data-theme="dark"] .rose-marquee__item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(230, 136, 154, 0.6); /* Розовая рамка */
+  transform: translateY(-10px) scale(1.03);
+  
+  /* Усиленное свечение: внешнее и внутреннее */
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(230, 136, 154, 0.4),
+    inset 0 0 20px rgba(230, 136, 154, 0.15); /* Внутренний свет */
+  z-index: 10;
+}
+
+html[data-theme="dark"] .rose-marquee__item:hover img {
+  filter: saturate(1.2) contrast(1.1) brightness(1.05); /* Ещё чуть ярче */
+}
+
+/* 5. Необычная деталь: эффект виньетки при наведении */
+html[data-theme="dark"] .rose-marquee__item::after {
+  content: '';
+  position: absolute;
+  inset: 8px; /* Внутри рамки */
+  border-radius: 12px;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.4) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+html[data-theme="dark"] .rose-marquee__item:hover::after {
+  opacity: 1; /* Затемняем края, чтобы взгляд фокусировался на центре розы */
+}
+
+/* ============================================================
    FOOTER — приглушение ярких элементов в тёмной теме
    ============================================================ */
 
@@ -2201,6 +2564,8 @@ html[data-theme="dark"] .site-footer__bottom {
   flex: 0 0 100%;
   width: 100%;
   position: relative;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .rose-slider__overlay {
@@ -2276,7 +2641,7 @@ html[data-theme="dark"] .site-footer__bottom {
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 0.5rem;
+  gap: 3px;
   z-index: 2;
 }
 
@@ -2830,7 +3195,7 @@ html[data-theme="dark"] .site-footer__bottom {
   font-size: 22px;
   line-height: 1;
   letter-spacing: 1px;
-  color: varvar(--color-star);
+  color: var(--color-star);
   filter: drop-shadow(0 0 6px rgba(255, 180, 0, 0.35));
   user-select: none;
 }
@@ -3033,52 +3398,108 @@ html[data-theme="dark"] .site-footer__bottom {
   padding: 0;
 }
 
-/* --- Сетка: слайдер + информация --- */
+/* --- ЛЕВАЯ КОЛОНКА: слайдер --- */
+/* ============================================================
+   СЛАЙДЕР НА СТРАНИЦЕ СОРТА — ФИНАЛЬНЫЙ ФИКС
+   ============================================================ */
+
+/* 1. Сдвигаем слайдер чуть ниже */
+.rose-layout__slider {
+  padding-top: 40px;
+}
+
+/* 2. Расширяем колонку слайдера */
 .rose-layout {
   display: grid;
-  grid-template-columns: 640px 1fr;
-  gap: 48px;
-  align-items: start;
+  grid-template-columns: 720px 1fr;
+  gap: 56px;
+  align-items: center;
   max-width: 1400px;
   min-height: calc(100vh - 160px);
   margin: 0 auto;
-  padding: 0;
 }
 
-/* --- ЛЕВАЯ КОЛОНКА: слайдер --- */
-.rose-layout__slider {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
+/* 3. Убираем ограничение по ширине внутри колонки */
 .rose-layout__slider .hero-wrapper {
+  max-width: 100%;
   width: 100%;
-  max-width: 560px;
-  margin: 0;
-  padding: 0;
 }
 
 .rose-layout__slider .hero-slider-container {
-  width: 100%;
-  max-width: 640px;
-  height: 700px;
-  min-height: 700px;
-  max-height: none;
-  margin: 0 auto;
-  aspect-ratio: 3 / 4;
-  border-radius: 20px;
+  /* Ширина = 3/4 от высоты, но не больше колонки */
+  width: min(100%, 525px);   /* 700 × 3 / 4 = 525 */
+  aspect-ratio: 3 / 4;       /* ← задаёт пропорцию */
+  height: auto;              /* ← обязательно: без этого aspect-ratio не работает */
+  max-height: 700px;         /* ← верхний предел */
+  min-height: 0;
+  margin: 0 auto;            /* центрируем, если колонка шире 525px */
   overflow: hidden;
-  background: #1a1410;
-  box-shadow: var(--shadow-lg);
-  position: relative;
+  background: #1a1a1a;
+  border-radius: 20px;
 }
 
+/* Слайд полностью заполняет контейнер */
 .rose-layout__slider .rose-slider__slide {
-  height: 700px;
-  min-height: 700px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+
+.rose-layout__slider .hero-slider-container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* 5. Точки — внутри фото, по нижнему краю, с подложкой */
+.hero-slider-container .rose-slider__dots {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 100px;
+}
+
+.hero-slider-container .rose-slider__dot {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+}
+
+.hero-slider-container .rose-slider__dot--active {
+  background: #fff;
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme="dark"] .hero-slider-container .rose-slider__dot--active {
+  background: var(--color-primary);
+  box-shadow: 0 0 8px rgba(230, 136, 154, 0.8);
+}
+
+/* 6. Адаптив */
+@media (max-width: 1200px) {
+  .rose-layout {
+    grid-template-columns: 520px 1fr;
+  }
+}
+
+/* На узких экранах даём слайдеру растянуться по ширине */
+@media (max-width: 900px) {
+  .rose-layout__slider .hero-slider-container {
+    width: min(100%, 100%);
+    max-height: 70vh;
+  }
 }
 
 /* --- ПРАВАЯ КОЛОНКА: информация --- */
@@ -3271,10 +3692,6 @@ html[data-theme="dark"] .rose-specs h3 {
   font-weight: 500;
 }
 
-html[data-theme="dark"] .rose-specs li {
-  border-bottom-color: var(--color-border);
-}
-
 html[data-theme="dark"] .rose-specs li strong {
   color: var(--color-primary);
   opacity: 1;
@@ -3423,19 +3840,6 @@ html[data-theme="dark"] .rose-layout__info .section__text {
    Приглушаем акценты и текст, чтобы не «выжигали» глаза
    ============================================================ */
 
-/* --- Карточка характеристик --- */
-html[data-theme="dark"] .rose-specs {
-  background: var(--color-bg-card);        /* #241f1c — тёмный, но не чёрный */
-  border-color: var(--color-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-html[data-theme="dark"] .rose-specs h3 {
-  color: var(--color-primary);
-  opacity: 0.85;                            /* приглушаем заголовок */
-  font-weight: 500;
-}
-
 /* --- Строки: ярлык и значение --- */
 html[data-theme="dark"] .rose-specs li {
   border-bottom-color: var(--color-border); /* разделитель становится нейтральным */
@@ -3495,10 +3899,7 @@ html[data-theme="dark"] .info-card h4 {
 /* ============================================================
    8. СТРАНИЦА СОРТА — АДАПТИВ
    ============================================================ */
-/* Базово: десктоп */
-.rose-layout {
-  grid-template-columns: 640px 1fr;
-} 
+
 /* Планшет */
 @media (max-width: 1100px) {
   .rose-layout {
@@ -3590,6 +3991,117 @@ html[data-theme="dark"] .info-card h4 {
   .rose-layout__slider .rose-slider__slide {
     height: 300px;
     min-height: 300px;
+  }
+}
+
+/* ============================================================
+   СЛАЙДЕР НА ГЛАВНОЙ В ТЁМНОЙ ТЕМЕ
+   ============================================================ */
+
+/* 1. Усиливаем затемнение снизу, чтобы текст читался на любом фото */
+html[data-theme="dark"] .rose-slider__overlay {
+  /* Более плотный градиент снизу */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 60%);
+}
+
+/* 2. Заголовок: мягкий кремовый вместо чистого белого + тень */
+html[data-theme="dark"] .rose-slider__title {
+  color: #f5e6e6; /* Тёплый кремовый, как у кнопок в тёмной теме */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8); /* Тень для лучшей читаемости */
+}
+
+/* 3. Подзаголовок (если есть): приглушённый серо-бежевый */
+html[data-theme="dark"] .rose-slider__subtitle {
+  color: var(--color-text-muted); /* #a09a95 */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* 4. Ссылка «Подробнее»: делаем её акцентной розовой */
+html[data-theme="dark"] .rose-slider__link {
+  color: var(--color-primary); /* Фирменный розовый #e6889a */
+  border-bottom: 1px solid rgba(230, 136, 154, 0.4);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  font-weight: 600;
+}
+
+html[data-theme="dark"] .rose-slider__link:hover {
+  color: #ffffff; /* При наведении — чистый белый */
+  border-bottom-color: #ffffff;
+}
+
+/* 5. Стрелки слайдера: делаем их тёмными и стеклянными */
+html[data-theme="dark"] .hero-slider-container .rose-slider__arrow {
+  background: rgba(36, 31, 28, 0.6) !important; /* Тёмное матовое стекло */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #f5e6e6 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html[data-theme="dark"] .hero-slider-container .rose-slider__arrow:hover {
+  background: rgba(230, 136, 154, 0.8) !important; /* Розовый при наведении */
+  color: #ffffff !important;
+}
+
+/* 6. Точки навигации: приглушаем неактивные */
+html[data-theme="dark"] .hero-slider-container .rose-slider__dot {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="dark"] .hero-slider-container .rose-slider__dot--active {
+  background: var(--color-primary); /* Активная точка — розовая */
+  transform: scale(1.3);
+  box-shadow: 0 0 10px rgba(230, 136, 154, 0.5); /* Лёгкое свечение */
+}
+
+/* ============================================================
+   ФИНАЛЬНОЕ ПЕРЕОПРЕДЕЛЕНИЕ СЛАЙДЕРА — 3:4, макс. 700px
+   Добавлено в конец файла, чтобы перебить все ранние правила.
+   Если нужно вернуть как было — просто удалите этот блок.
+   ============================================================ */
+
+.rose-layout__slider,
+.rose-layout__slider #rose-gallery-slider {
+  width: min(100%, 525px) !important;   /* 700 × 3 / 4 = 525 */
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 700px !important;
+  aspect-ratio: 3 / 4 !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+}
+
+.rose-layout__slider .rose-slider__slide,
+.rose-layout__slider {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+}
+
+/* Планшет и телефон — не даём слайдеру растянуться ниже экрана */
+@media (max-width: 900px) {
+  .rose-layout__slider,
+  .rose-layout__slider #rose-gallery-slider {
+    width: min(100%, 100%) !important;
+    max-height: 70vh !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .rose-layout__slider,
+  .rose-layout__slider #rose-gallery-slider {
+    max-height: 60vh !important;
+  }
+}
+
+.page-wrapper .hero-wrapper {
+  margin-top: 40px;
+}
+
+/* На мобильных отступ чуть меньше */
+@media (max-width: 600px) {
+  .page-wrapper .hero-wrapper {
+    margin-top: 24px;
   }
 }
 
@@ -3802,6 +4314,68 @@ html[data-theme="dark"] .bar-fill {
 .card:hover .rating-count {
   background: #ecdfe4;
   color: var(--color-primary);
+}
+
+/* ============================================================
+   КАРТОЧКИ КАТАЛОГА В ТЁМНОЙ ТЕМЕ
+   ============================================================ */
+
+/* 1. Метка с рейтингом на фото (белый овал) — делаем стеклянной */
+html[data-theme="dark"] .card__badge {
+  background: rgba(36, 31, 28, 0.75); /* Тёмный полупрозрачный фон */
+  backdrop-filter: blur(8px);          /* Эффект матового стекла */
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Тонкая светлая рамка */
+  color: #f0f0f0;                       /* Светлый текст */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Звездочка внутри метки остается золотой */
+html[data-theme="dark"] .card__badge-star {
+  color: #ffb400;
+}
+
+/* 2. Текст на карточке — убираем "кислотный" белый */
+html[data-theme="dark"] .card__title {
+  color: var(--color-text-soft); /* Мягкий серо-бежевый #c9c2bc */
+}
+
+html[data-theme="dark"] .card__latin,
+html[data-theme="dark"] .card__category {
+  color: var(--color-text-muted); /* Приглушенный серый #a09a95 */
+}
+
+/* 3. Кнопка «В избранное» */
+/* Неактивное состояние */
+html[data-theme="dark"] .card__fav-btn {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+html[data-theme="dark"] .card__fav-btn:hover:not(.active) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Активное состояние (когда сорт добавлен) */
+html[data-theme="dark"] .card__fav-btn.active {
+  background: #8b3a52;       /* Глубокий винный */
+  color: #f5e6e6;            /* Тёплый кремовый */
+  border-color: #8b3a52;
+}
+
+/* 4. Счетчик отзывов (серый овал рядом со звездами) */
+html[data-theme="dark"] .rating-count {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-muted);
+}
+
+/* 5. Сама карточка — добавляем тонкую рамку, чтобы она не сливалась с фоном */
+html[data-theme="dark"] .card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* === Страница избранного === */
@@ -4108,6 +4682,51 @@ html[data-theme="dark"] .bar-fill {
   }
 }
 
+/* ============================================================
+   ИСПРАВЛЕНИЕ ХЕДЕРА И КНОПОК В ТЁМНОЙ ТЕМЕ
+   ============================================================ */
+
+/* 1. Ссылки в навигации — делаем их мягче, убираем «кислотный» белый */
+html[data-theme="dark"] .nav__links a {
+  color: var(--color-text-soft); /* Мягкий серо-бежевый #c9c2bc */
+}
+
+html[data-theme="dark"] .nav__links a:hover,
+html[data-theme="dark"] .nav__links a.active {
+  color: var(--color-primary); /* Розовый акцент при наведении */
+}
+
+/* 2. Круг вокруг эмодзи-розы — делаем тёмным и благородным */
+html[data-theme="dark"] .nav__logo-mark {
+  /* Тёмный винный градиент вместо светло-розового #fff2f4 */
+  background: linear-gradient(135deg, #3a2a30 0%, #2a1f24 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* 3. Кнопка «Открыть каталог» (и все остальные .btn) */
+html[data-theme="dark"] .btn {
+  /* Делаем фон глубоким винным, а не светло-розовым */
+  background: #8b3a52; 
+  /* Текст — тёплый кремовый, чтобы не «резал» глаз */
+  color: #f5e6e6; 
+}
+
+html[data-theme="dark"] .btn:hover {
+  background: #a04662; /* Чуть светлее при наведении */
+  color: #ffffff;      /* Чистый белый только при наведении для контраста */
+}
+
+/* 4. Кнопка переключения темы (солнышко) */
+html[data-theme="dark"] .theme-toggle {
+  color: var(--color-text-soft);
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"] .theme-toggle:hover {
+  background: var(--color-bg-card);
+  border-color: var(--color-primary);
+}
+
 /* ===== БЛОК «ПОСЛЕДНИЕ ОТЗЫВЫ» НА ГЛАВНОЙ ===== */
 
 .latest-reviews {
@@ -4264,6 +4883,32 @@ html[data-theme="dark"] .bar-fill {
   color: var(--color-primary);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* ============================================================
+   МЕТКА РЕЙТИНГА НА КАРТОЧКАХ ОТЗЫВОВ В ТЁМНОЙ ТЕМЕ
+   (для блока "Отзывы посетителей" на главной)
+   ============================================================ */
+
+html[data-theme="dark"] .latest-review__score {
+  /* Тёмный полупрозрачный фон (матовое стекло) */
+  background: rgba(36, 31, 28, 0.75);
+  
+  /* Эффект размытия фона под плашкой */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  /* Тонкая светлая рамка */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  
+  /* Цвет текста — ваш фирменный розовый (в тёмной теме он светло-розовый) */
+  color: var(--color-primary);
+  
+  /* Мягкая тень для отрыва от фона */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  
+  /* На всякий случай зафиксируем скругление */
+  border-radius: 100px;
 }
 
 /* Мобильная адаптация */
