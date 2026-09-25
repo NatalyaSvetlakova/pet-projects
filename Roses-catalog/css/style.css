@@ -1,5 +1,9 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 :root {
   /* ---------- ЦВЕТА: базовые ---------- */
+  color-scheme: light;
   --color-bg: #fcfbf9;     /* основной фон страниц */
   --color-bg-card: #ffffff;     /* фон карточек, панелей, форм */
   --color-border: #e5e5e5;    /* тонкие линии, разделители */
@@ -18,8 +22,6 @@
   --shadow-lg: 0 12px 32px rgba(183, 46, 74, 0.12);
   /* ---------- РАЗМЕРЫ / СЕТКА ---------- */
   --max-width: 1120px;     /* предельная ширина контента на всех страницах */
-   /* ---------- ПРОЧЕЕ ---------- */
-  box-sizing: border-box;    /* при наведении, модалки */
   /* ---- Зелёный акцент для раздела отзывов ---- */
   --accent-green:       #2c5f2d;   /* активная вкладка, кнопки, аватар */
   --accent-green-light: #e8f0e8;   /* мягкий фон при hover */
@@ -29,10 +31,10 @@
   --color-star:         #ffb400;   /* золотой */
   --color-star-empty:   #e0e0e0;   /* пустая звезда */  
 /* Chrome/Edge/Firefox сами переключают все нативные элементы в светлую палитру */
-  --color-scheme: light;
 }
 
 html[data-theme="dark"] {
+  color-scheme: dark;
   /* ---------- ЦВЕТА: базовые ---------- */
   --color-bg: #1a1614;     /* тёплый почти-чёрный, а не чистый #000 */
   --color-bg-card: #241f1c;     /* карточки чуть светлее фона */
@@ -54,7 +56,6 @@ html[data-theme="dark"] {
   --color-star:         #ffb400;   /* золотой остаётся золотым */
   --color-star-empty:   #4a4340;   /* пустая — тёмно-серая */
 /* Chrome/Edge/Firefox сами переключают все нативные элементы в тёмную палитру */
-  --color-scheme: dark;
 }
 
 /* Плавный переход всех цветов при смене темы */
@@ -356,10 +357,6 @@ html[data-theme="dark"] .nav__links a.active {
   padding: 0;        /*← убираем лишние отступы */
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 /* ============================================================
    СЕТКА КАРТОЧЕК НА ГЛАВНОЙ — СТРОГО 3 В РЯД
    ============================================================ */
@@ -379,6 +376,7 @@ html {
   align-items: center;
   gap: 10px; /* Добавляем отступ между рейтингом и кнопкой */
   flex-wrap: wrap; /* Разрешаем перенос, если места совсем мало */
+  padding: 0 18px 18px;   /* ← добавили горизонтальные и нижний отступ */
 }
 
 /* 3. Делаем кнопку «В избранное» чуть компактнее, но читаемой */
@@ -675,8 +673,8 @@ background: rgba(255,255,255,0.3);
 }
 
 /* Анимация удаления карточки из избранного */
-.card.fav-card--removing {
-  animation: favCardRemove .4s ease forwards;
+.cards-grid .card.fav-card--removing {     /* 0,3,0 — теперь точно сильнее */
+  animation: favCardRemove 0.4s ease forwards;
   pointer-events: none;
 }
 @keyframes favCardRemove {
@@ -3160,6 +3158,34 @@ html[data-theme="dark"] .site-footer__bottom {
 .review-form__actions {
   display: flex;
   gap: 10px;
+  align-items: stretch;   /* ← растягиваем обе кнопки по высоте самой высокой */
+}
+
+/* Обе кнопки внутри формы — единый размер */
+.review-form__actions > button {
+  margin-top: 0;          /* убираем сдвиг у submit */
+  width: auto;            /* снимаем width:100% у submit */
+  height: 52px;           /* общая высота — подбери под свой дизайн */
+  padding: 0 24px;        /* горизонтальный паддинг, вертикальный не нужен — высота фиксирована */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+/* «Отправить» — растягивается, занимает больше места */
+.review-form__actions > .submit-btn {
+  flex: 1;
+}
+
+/* «Отмена» — по содержимому, но той же высоты */
+.review-form__actions > .btn,
+.review-form__actions > .btn--outline,
+.review-form__actions > .cancel-btn {
+  flex: 0 0 auto;
+  min-width: 120px;
 }
 
 .rating-input__star:hover,

@@ -2,127 +2,127 @@
 // СИСТЕМА ИЗБРАННОГО (localStorage)
 // ============================================
 
-const favorites = {
-  get: function() {
-    try {
-      const data = localStorage.getItem('roseFavorites');
-      return data ? JSON.parse(data) : [];
-    } catch {
-      return [];
-    }
-  },
+// const favorites = {
+//   get: function() {
+//     try {
+//       const data = localStorage.getItem('roseFavorites');
+//       return data ? JSON.parse(data) : [];
+//     } catch {
+//       return [];
+//     }
+//   },
 
-  set: function(list) {
-    localStorage.setItem('roseFavorites', JSON.stringify(list));
-  },
+//   set: function(list) {
+//     localStorage.setItem('roseFavorites', JSON.stringify(list));
+//   },
 
-  add: function(id) {
-    const list = this.get();
-    if (!list.includes(id)) {
-      list.push(id);
-      this.set(list);
-    }
-  },
+//   add: function(id) {
+//     const list = this.get();
+//     if (!list.includes(id)) {
+//       list.push(id);
+//       this.set(list);
+//     }
+//   },
 
-  remove: function(id) {
-    const list = this.get();
-    const index = list.indexOf(id);
-    if (index !== -1) {
-      list.splice(index, 1);
-      this.set(list);
-    }
-  },
+//   remove: function(id) {
+//     const list = this.get();
+//     const index = list.indexOf(id);
+//     if (index !== -1) {
+//       list.splice(index, 1);
+//       this.set(list);
+//     }
+//   },
 
-  isFavorite: function(id) {
-    return this.get().includes(id);
-  },
+//   isFavorite: function(id) {
+//     return this.get().includes(id);
+//   },
 
-  toggle: function(id) {
-    if (this.isFavorite(id)) {
-      this.remove(id);
-      return false;
-    } else {
-      this.add(id);
-      return true;
-    }
-  },
+//   toggle: function(id) {
+//     if (this.isFavorite(id)) {
+//       this.remove(id);
+//       return false;
+//     } else {
+//       this.add(id);
+//       return true;
+//     }
+//   },
 
-  getAll: function() {
-    const favIds = this.get();
-    return roses.filter(rose => favIds.includes(rose.id));
-  },
+//   getAll: function() {
+//     const favIds = this.get();
+//     return roses.filter(rose => favIds.includes(rose.id));
+//   },
 
-  count: function() {
-    return this.get().length;
-  }
-};
+//   count: function() {
+//     return this.get().length;
+//   }
+// };
 
 // ============================================
 // ПОМОЩНИКИ ДЛЯ РЕНДЕРИНГА
 // ============================================
 
-function renderCard(rose) {
-  const isFav = favorites.isFavorite(rose.id);
+// function renderCard(rose) {
+//   const isFav = favorites.isFavorite(rose.id);
   
-  return `
-    <div class="card" data-id="${rose.id}">
-      <div class="card__image-wrap">
-        <img src="${rose.images[0] || ''}" alt="${rose.name}" class="card__image" loading="lazy">
-        <span class="card__badge">★ ${rose.rating}</span>
-      </div>
-      <div class="card__body">
-        <h3 class="card__title">${rose.name}</h3>
-        <p class="card__desc">${rose.description || rose.color}</p>
-        <div class="card__footer">
-          <span class="card__rating">★ ${rose.rating}</span>
-          <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
-            ${isFav ? '❤️' : '♡'} В избранное
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderCards(containerId, rosesList) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
+//   return `
+//     <a class="card" href="rose.html?id=${rose.id}" data-id="${rose.id}">     
+//       <div class="card__image-wrap">
+//         <img src="${rose.images[0] || ''}" alt="${rose.name}" class="card__image" loading="lazy">
+//         <span class="card__badge">★ ${rose.rating}</span>
+//       </div>
+//       <div class="card__body">
+//         <h3 class="card__title">${rose.name}</h3>
+//         <p class="card__desc">${rose.description || rose.color}</p>
+//         <div class="card__footer">
+//           <span class="card__rating">★ ${rose.rating}</span>
+//           <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
+//             ${isFav ? '❤️' : '♡'} В избранное
+//           </button>
+//         </div>
+//       </div>    
+//     </a>
+//   `;
+// }
+// 
+// function renderCards(containerId, rosesList) {
+//   const container = document.getElementById(containerId);
+//   if (!container) return;
   
-  if (!rosesList || rosesList.length === 0) {
-    container.innerHTML = `
-      <div style="text-align:center;padding:60px 20px;color:#999;grid-column:1/-1;">
-        <p style="font-size:2rem;">🌹</p>
-        <p style="font-family:Georgia,serif;font-size:1.2rem;">Нет сортов для отображения</p>
-      </div>
-    `;
-    return;
-  }
+//   if (!rosesList || rosesList.length === 0) {
+//     container.innerHTML = `
+//       <div style="text-align:center;padding:60px 20px;color:#999;grid-column:1/-1;">
+//         <p style="font-size:2rem;">🌹</p>
+//         <p style="font-family:Georgia,serif;font-size:1.2rem;">Нет сортов для отображения</p>
+//       </div>
+//     `;
+//     return;
+//   }
   
-  container.innerHTML = rosesList.map(rose => renderCard(rose)).join('');
+//   container.innerHTML = rosesList.map(rose => renderCard(rose)).join('');
   
-  // Вешаем обработчики на кнопки "В избранное"
-  container.querySelectorAll('.card__fav-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const id = parseInt(this.dataset.id);
-      const isNowFavorite = favorites.toggle(id);
-      this.textContent = isNowFavorite ? '❤️ В избранное' : '♡ В избранное';
-      this.classList.toggle('active', isNowFavorite);
+//   // Вешаем обработчики на кнопки "В избранное"
+//   container.querySelectorAll('.card__fav-btn').forEach(btn => {
+//     btn.addEventListener('click', function(e) {
+//       e.stopPropagation();
+//       const id = parseInt(this.dataset.id);
+//       const isNowFavorite = favorites.toggle(id);
+//       this.textContent = isNowFavorite ? '❤️ В избранное' : '♡ В избранное';
+//       this.classList.toggle('active', isNowFavorite);
       
-      // Обновляем счетчик избранного, если он есть
-      const countEl = document.getElementById('favCount');
-      if (countEl) {
-        countEl.textContent = favorites.count() + ' сортов';
-      }
-    });
-  });
-}
+//       // Обновляем счетчик избранного, если он есть
+//       const countEl = document.getElementById('favCount');
+//       if (countEl) {
+//         countEl.textContent = favorites.count() + ' сортов';
+//       }
+//     });
+//   });
+// }
 
 // ============================================
 // ЗАГРУЗКА ПРИ ЗАПУСКЕ
 // ============================================
 
-console.log('❤️ В избранном:', favorites.count(), 'сортов');
+// console.log('❤️ В избранном:', favorites.count(), 'сортов');
 
 // ============================================
 // ЕДИНЫЙ РЕЙТИНГ: отзывы из data.js + отзывы пользователя

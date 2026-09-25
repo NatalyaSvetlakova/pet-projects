@@ -1,6 +1,8 @@
 // favorites.js — логика работы с избранным через localStorage
 // Предоставляет: isInFavorites, toggleFavorite, getFavorites
 
+
+
 /**
  * Ключ для localStorage
  */
@@ -81,6 +83,9 @@ function getFavoriteRoses() {
   return roses.filter(rose => favIds.includes(rose.id));
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('favoritesContainer');
+  if (!container) return;
 // --- Авто-обновление кнопок на странице при загрузке (опционально) ---
 // Если хочешь, чтобы при перезагрузке страницы кнопки сразу были «активными»,
 // можно вызвать это на нужных страницах или оставить на усмотрение page-скриптов.
@@ -196,35 +201,33 @@ window.rosesReady.then(() => {
     const imageSrc = getImageSrc(rose);
 
     card.innerHTML = `
-      <a href="rose.html?id=${rose.id}" class="card__link">
-        <div class="card__image-wrap">
-          <img src="${imageSrc}" alt="${rose.name || 'Роза'}"
-               class="card__image" loading="lazy"
-               onerror="this.style.display='none'">
-          ${ratingNum > 0 ? `
-            <span class="card__badge" data-rating="${ratingNum}">
-              <span class="card__badge-star" aria-hidden="true">★</span>
-              <span class="card__badge-value">0.0</span>
-            </span>
-          ` : ''}
-        </div>
-        <div class="card__body">
-          <span class="card__category">${category}</span>
-          <h3 class="card__title">${rose.name || 'Без названия'}</h3>
-          ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
-          <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
-          <div class="card__footer">
-            <div class="stars-wrapper">
-              <span class="stars-visual" data-rating="${ratingNum}" style="--rating:0" aria-label="Рейтинг ${ratingNum} из 5"></span>
-              ${reviewsCount > 0 ? `<span class="rating-count">${reviewsCount}</span>` : ''}
-            </div>
-            <button class="card__fav-btn active" data-id="${rose.id}">
-              ❤️ В избранном
-            </button>
-          </div>
-        </div>
-      </a>
-    `;
+  <a href="rose.html?id=${rose.id}" class="card__link">
+    <div class="card__image-wrap">
+      <img src="${imageSrc}" alt="${rose.name || 'Роза'}"
+           class="card__image" loading="lazy" onerror="this.style.display='none'">
+      ${ratingNum > 0 ? `
+        <span class="card__badge" data-rating="${ratingNum}">
+          <span class="card__badge-star" aria-hidden="true">★</span>
+          <span class="card__badge-value">0.0</span>
+        </span>` : ''}
+    </div>
+    <div class="card__body">
+      <span class="card__category">${category}</span>
+      <h3 class="card__title">${rose.name || 'Без названия'}</h3>
+      ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
+      <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
+    </div>
+  </a>
+  <div class="card__footer">
+    <div class="stars-wrapper">
+      <span class="stars-visual" data-rating="${ratingNum}" style="--rating:0"></span>
+      ${reviewsCount > 0 ? `<span class="rating-count">${reviewsCount}</span>` : ''}
+    </div>
+    <button type="button" class="card__fav-btn active" data-id="${rose.id}">
+      ❤️ В избранном
+    </button>
+  </div>
+`;
 
     // Анимация: цифра счётчиком, звёзды заливкой
     const badge = card.querySelector('.card__badge[data-rating]');
@@ -255,4 +258,5 @@ window.rosesReady.then(() => {
 
     return card;
   }
+});
 });

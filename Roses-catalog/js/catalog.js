@@ -1,3 +1,7 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const catalogGrid = document.getElementById('catalogCards');
+  if (!catalogGrid) return; // ← мы не на странице каталога — выходим молча, без ошибок
+
 window.rosesReady.then(() => {
   'use strict';
 
@@ -8,21 +12,21 @@ window.rosesReady.then(() => {
   // ============================================================
 
   // --- ЦВЕТ ---
-  const COLOR_PATTERNS = [
-    { tag: 'бордовый', re: /бордовый/ },
-    { tag: 'красный',  re: /красный/ },
-    { tag: 'розовый',  re: /розовый/ },
-    { tag: 'белый',    re: /белый/ },
-    { tag: 'желтый',   re: /желтый/ },
-    { tag: 'персиковый', re: /персиковый/ },
-    { tag: 'сиреневый',  re: /сиреневый/ },
-    { tag: 'зеленый',    re: /зеленый/ },
-    { tag: 'бордово-белый',    re: /бордово-белый/ },
-    { tag: 'бело-розовый',    re: /бело-розовый/ },
-    { tag: 'желто-розовый',    re: /желто-розовый/ },
-    { tag: 'краснно-белый',    re: /красно-белый/ },
-    { tag: 'красно-желтый',    re: /красно-желтый/ },
-  ];
+  // const COLOR_PATTERNS = [
+  //   { tag: 'бордовый', re: /бордовый/ },
+  //   { tag: 'красный',  re: /красный/ },
+  //   { tag: 'розовый',  re: /розовый/ },
+  //   { tag: 'белый',    re: /белый/ },
+  //   { tag: 'желтый',   re: /желтый/ },
+  //   { tag: 'персиковый', re: /персиковый/ },
+  //   { tag: 'сиреневый',  re: /сиреневый/ },
+  //   { tag: 'зеленый',    re: /зеленый/ },
+  //   { tag: 'бордово-белый',    re: /бордово-белый/ },
+  //   { tag: 'бело-розовый',    re: /бело-розовый/ },
+  //   { tag: 'желто-розовый',    re: /желто-розовый/ },
+  //   { tag: 'красно-белый',    re: /красно-белый/ },
+  //   { tag: 'красно-желтый',    re: /красно-желтый/ },
+  // ];
 
    // --- ЦВЕТ: СТРОГОЕ СОВПАДЕНИЕ ---
   // rosecolor: 'белый, бордово-белый' → ['белый', 'бордово-белый']
@@ -84,16 +88,16 @@ window.rosesReady.then(() => {
     return null;
   }
 
-  // --- ШИРИНА КУСТА ---
-  function parseWidth(rose) {
-    // 1. Если в data.js явно задано поле width — используем его
-    if (rose.width) {
-      const r = parseRangeCm(rose.width);
-      if (r) return r;
-    }
-    // 2. Иначе — ничего не возвращаем (сорт выпадет из фильтра ширины)
-    return null;
-  }
+  // // --- ШИРИНА КУСТА ---
+  // function parseWidth(rose) {
+  //   // 1. Если в data.js явно задано поле width — используем его
+  //   if (rose.width) {
+  //     const r = parseRangeCm(rose.width);
+  //     if (r) return r;
+  //   }
+  //   // 2. Иначе — ничего не возвращаем (сорт выпадет из фильтра ширины)
+  //   return null;
+  // }
 
   // --- НАЗНАЧЕНИЕ ---
   function parsePurpose(value) {
@@ -156,6 +160,11 @@ window.rosesReady.then(() => {
   function rangesOverlap(a, b) {
     if (!a || !b) return true;
     return a.min <= b.max && b.min <= a.max;
+  }
+
+  // Нормализация строки для поиска: нижний регистр, «ё» → «е», обрезка пробелов
+  function norm(s) {
+    return String(s || '').toLowerCase().replace(/ё/g, 'е').trim();
   }
 
   // ============================================================
@@ -321,12 +330,14 @@ window.rosesReady.then(() => {
 
     // Поиск
     if (state.search.trim()) {
-      const q = state.search.toLowerCase().trim();
-      filtered = filtered.filter(rose =>
-        rose.name.toLowerCase().includes(q) ||
-        (rose.latinName && rose.latinName.toLowerCase().includes(q))
-      );
-    }
+  const q = norm(state.search);
+  if (q) {
+    filtered = filtered.filter(rose =>
+      norm(rose.name).includes(q) ||
+      norm(rose.latinName).includes(q)
+    );
+  }
+}
 
     // --- ФИЛЬТР ПО ЦВЕТУ (строгое совпадение) ---
     if (state.filters.color.length > 0) {
@@ -539,7 +550,7 @@ window.rosesReady.then(() => {
       <div class="card" data-id="${rose.id}">
         <a href="rose.html?id=${rose.id}" class="card__link">
           <div class="card__image-wrap">
-            <img src="${imageSrc}" alt="${rose.name}" class="card__image" loading="lazy" onerror="this.style.display='none'">
+            <img src="${imageSrc}" alt="${rose.name || 'Роза'}" class="card__image" loading="lazy" onerror="this.style.display='none'">
             ${ratingNum > 0 ? `
               <span class="card__badge" data-rating="${ratingNum}">
                 <span class="card__badge-star" aria-hidden="true">★</span>
@@ -548,21 +559,21 @@ window.rosesReady.then(() => {
           </div>
           <div class="card__body">
             <span class="card__category">${category}</span>
-            <h3 class="card__title">${rose.name}</h3>
+            <h3 class="card__title">${rose.name || 'Без названия'}</h3>
             ${rose.latinName ? `<p class="card__latin">${rose.latinName}</p>` : ''}
             <p class="card__desc">${rose.color || 'Красивый сорт розы'}</p>
-            <div class="card__footer">
-              <div class="stars-wrapper">
-                <span class="stars-visual" data-rating="${ratingNum}" style="--rating:0"></span>
-                ${reviewsCount > 0 ? `<span class="rating-count">${reviewsCount}</span>` : ''}
-              </div>
-              <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
-                ${isFav ? '❤️' : '♡'} В избранное
-              </button>
+           </div>
+          </a>
+          <div class="card__footer">
+            <div class="stars-wrapper">
+              <span class="stars-visual" data-rating="${ratingNum}" style="--rating:0"></span>
+              ${reviewsCount > 0 ? `<span class="rating-count">${reviewsCount}</span>` : ''}
             </div>
-          </div>
-        </a>
-      </div>`;
+            <button class="card__fav-btn ${isFav ? 'active' : ''}" data-id="${rose.id}">
+              ${isFav ? '❤️' : '♡'} В избранное
+            </button>
+          </div>  
+        </div>`;
   }
 
   // ============================================================
@@ -695,6 +706,7 @@ window.rosesReady.then(() => {
   );
   obs.observe(sentinel);
 })();
+});
 // 
 // 
 // В бан 19.09.26 после доработки ФИЛЬТРОВ
