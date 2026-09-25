@@ -1,0 +1,37 @@
+# ============================================================
+# .gitignore для проекта «Азбука Роз»
+# ============================================================
+
+# --- Операционные системы ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+desktop.ini
+$RECYCLE.BIN/
+
+# --- Редакторы и IDE ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Временные и резервные ---
+*.log
+*.tmp
+*.bak
+*.backup
+*.old
+
+# --- Секреты (на будущее) ---
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+secrets.json
+
+# --- Зависимости (на будущее, если добавлю сборку) ---
+node_modules/
