@@ -299,7 +299,8 @@ html[data-theme="dark"] .nav__links a.active {
 
 .section__title {
   font-family: 'Segoe UI', sans-serif;
-  font-size: 3.0rem; /* Было 2rem или 2.5rem. На десктопе 3rem выглядит солидно */
+  /* font-size: 3.0rem; Было 2rem или 2.5rem. На десктопе 3rem выглядит солидно */
+  font-size: clamp(1.6rem, 5vw, 3rem);
   font-weight: 500; /* Максимально жирный, чтобы бросался в глаза */
   margin: 0 0 12px 0;
   line-height: 1.1;
@@ -1925,7 +1926,8 @@ html[data-theme="dark"] .catalog-sidebar::-webkit-scrollbar-thumb {
 
 .about-hero__title {
   font-family: 'Georgia', serif;
-  font-size: 4rem;
+  /* font-size: 4rem; */
+  font-size: clamp(2.6rem, 8vw, 4rem);
   color: var(--color-primary);
   margin: 0 0 20px;
   font-weight: 500;
@@ -1941,10 +1943,10 @@ html[data-theme="dark"] .catalog-sidebar::-webkit-scrollbar-thumb {
   font-weight: 400;
 }
 
-@media (max-width: 600px) {
-  .about-hero__title { font-size: 2.6rem; }
-  .about-hero__lead  { font-size: 1.05rem; }
-}
+/* @media (max-width: 600px) { */
+  /* .about-hero__title { font-size: 2.6rem; } */
+  /* .about-hero__lead  { font-size: 1.05rem; } */
+/* } */
 
 .about-stats {
   max-width: 900px;
@@ -4700,9 +4702,6 @@ html[data-theme="dark"] .card {
 }
 
 @media (max-width: 480px) {
-  .section__title { 
-    font-size: 1.6rem; 
-  }
   .nav__links { 
     flex-direction: column; 
   }
