@@ -19,47 +19,47 @@
 
 ### Главная (светлая тема)
 
-![Главная — светлая, экран 1](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/home_light_1.png)
-![Главная — светлая, экран 2](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/home_light_2.png)
-![Главная — светлая, экран 3](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/home_light_3.png)
+![Главная — светлая, экран 1](docs/screenshots/home_light_1.png)
+![Главная — светлая, экран 2](docs/screenshots/home_light_2.png)
+![Главная — светлая, экран 3](docs/screenshots/home_light_3.png)
 
 ### Каталог (светлая тема)
 
-![Каталог — светлая, экран 1](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/catalog_light_1.png)
-![Каталог — светлая, экран 2](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/catalog_light_2.png)
-![Каталог — светлая, экран 3](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/catalog_light_3.png)
+![Каталог — светлая, экран 1](docs/screenshots/catalog_light_1.png)
+![Каталог — светлая, экран 2](docs/screenshots/catalog_light_2.png)
+![Каталог — светлая, экран 3](docs/screenshots/catalog_light_3.png)
 
 ### Страница сорта (светлая тема)
 
-![Страница сорта — светлая, экран 1](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/rose_page_light_1.png)
-![Страница сорта — светлая, экран 2](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/rose_page_light_2.png)
-![Страница сорта — светлая, экран 3](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/rose_page_light_3.png)
+![Страница сорта — светлая, экран 1](docs/screenshots/rose_page_light_1.png)
+![Страница сорта — светлая, экран 2](docs/screenshots/rose_page_light_2.png)
+![Страница сорта — светлая, экран 3](docs/screenshots/rose_page_light_3.png)
 
 ### Избранное (светлая тема)
 
-![Избранное — светлая](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/favorites_light.png)
+![Избранное — светлая](docs/screenshots/favorites_light.png)
 
 ### Главная (тёмная тема)
 
-![Главная — тёмная, экран 1](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/home_dark_1.png)
-![Главная — тёмная, экран 2](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/home_dark_2.png)
-![Главная — тёмная, экран 3](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/home_dark_3.png)
+![Главная — тёмная, экран 1](docs/screenshots/home_dark_1.png)
+![Главная — тёмная, экран 2](docs/screenshots/home_dark_2.png)
+![Главная — тёмная, экран 3](docs/screenshots/home_dark_3.png)
 
 ### Каталог (тёмная тема)
 
-![Каталог — тёмная, экран 1](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/catalog_dark_1.png)
-![Каталог — тёмная, экран 2](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/catalog_dark_2.png)
-![Каталог — тёмная, экран 3](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/catalog_dark_3.png)
+![Каталог — тёмная, экран 1](docs/screenshots/catalog_dark_1.png)
+![Каталог — тёмная, экран 2](docs/screenshots/catalog_dark_2.png)
+![Каталог — тёмная, экран 3](docs/screenshots/catalog_dark_3.png)
 
 ### Страница сорта (тёмная тема)
 
-![Страница сорта — тёмная, экран 1](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/rose_page_dark_1.png)
-![Страница сорта — тёмная, экран 2](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/rose_page_dark_2.png)
-![Страница сорта — тёмная, экран 3](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/rose_page_dark_3.png)
+![Страница сорта — тёмная, экран 1](docs/screenshots/rose_page_dark_1.png)
+![Страница сорта — тёмная, экран 2](docs/screenshots/rose_page_dark_2.png)
+![Страница сорта — тёмная, экран 3](docs/screenshots/rose_page_dark_3.png)
 
 ### Избранное (тёмная тема)
 
-![Избранное — тёмная](https://natalyasvetlakova.github.io/Roses-catalog/docs/screenshots/favorites_dark.png)
+![Избранное — тёмная](docs/screenshots/favorites_dark.png)
 
 ---
 
